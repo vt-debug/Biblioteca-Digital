@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bibliotheca | Dashboard SaaS</title>
+
+    <link rel="stylesheet" href="../css/home.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+        rel="stylesheet">
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <div class="bg-ambient"></div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="dashboard-container">
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header-mobile">
+                <span class="logo-text">Bibliotheca</span>
+                <button class="close-sidebar-btn"><i class="ph ph-x"></i></button>
+            </div>
+
+            <div class="logo-container desktop-only">
+                <i class="ph-fill ph-books"></i>
+                <span class="logo-text">Bibliotheca</span>
+            </div>
+
+            <nav class="menu">
+                <div class="menu-label">Navegação</div>
+                <a href="home.html" class="menu-item active spotlight-item"><i
+                        class="ph ph-squares-four"></i><span>Visão Geral</span></a>
+                <a href="explore.html" class="menu-item spotlight-item"><i class="ph ph-compass"></i><span>Explorar
+                        Acervo</span></a>
+                <a href="lists.html" class="menu-item spotlight-item"><i class="ph ph-bookmark-simple"></i><span>Minhas
+                        Listas</span></a>
+
+                <div class="menu-label">Comunidade</div>
+                <a href="community.html" class="menu-item spotlight-item"><i class="ph ph-users"></i><span>Clube do
+                        Livro</span></a>
+                <a href="reviews.html" class="menu-item spotlight-item"><i
+                        class="ph ph-star-half"></i><span>Avaliações</span></a>
+
+                <div class="menu-label">Conta</div>
+                <a href="settings.html" class="menu-item spotlight-item"><i
+                        class="ph ph-gear"></i><span>Configurações</span></a>
+            </nav>
+
+            <a href="stats.html" class="challenge-card spotlight-item"
+                style="text-decoration: none; display: block; cursor: pointer;">
+                <div class="challenge-header"><span>Meta Anual</span><span class="highlight">65%</span></div>
+                <div class="progress-ring">
+                    <div class="progress-fill" style="width: 65%"></div>
+                </div>
+                <p class="challenge-desc">13 de 20 livros lidos.</p>
+            </a>
+
+            <div class="sidebar-footer">
+                <a href="login.html" class="logout-btn spotlight-item"><i class="ph ph-sign-out"></i>
+                    <span>Sair</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="top-bar" id="topBar">
+                <div class="top-bar-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="ph ph-list"></i></button>
+                    <div class="greeting">
+                        <h1 id="greeting-text">Olá,</h1>
+                        <span class="user-name">Leitor Voraz</span>
+                    </div>
+                </div>
+
+                <div class="top-actions">
+                    <div class="search-container spotlight-item">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar...">
+                    </div>
+
+                    <div class="notification-wrapper">
+                        <button class="icon-btn spotlight-item" id="notifBtn"><i class="ph ph-bell"></i><span
+                                class="dot"></span></button>
+                        <div class="dropdown-menu" id="notifDropdown">
+                            <div class="dropdown-header">Notificações</div>
+                            <div class="notif-scroll">
+                                <div class="notif-item unread">
+                                    <div class="notif-icon alert"><i class="ph-fill ph-clock-countdown"></i></div>
+                                    <div class="notif-text">
+                                        <h4>Atraso</h4>
+                                        <p>'1984' vence amanhã.</p>
+                                    </div>
+                                </div>
+                                <div class="notif-item">
+                                    <div class="notif-icon success"><i class="ph-fill ph-trophy"></i></div>
+                                    <div class="notif-text">
+                                        <h4>Conquista</h4>
+                                        <p>Você leu 500 páginas!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-wrapper"><img src="https://i.pravatar.cc/150?img=68"
+                            class="avatar click-shrink"></div>
+                </div>
+            </header>
+
+            <div class="tags-wrapper animate-enter" style="animation-delay: 0.1s;">
+                <div class="tags-scroll" id="tagsContainer">
+                    <button class="tag-chip active spotlight-item" data-filter="all">Todos</button>
+                    <button class="tag-chip spotlight-item" data-filter="Ficção">Ficção</button>
+                    <button class="tag-chip spotlight-item" data-filter="Romance">Romance</button>
+                    <button class="tag-chip spotlight-item" data-filter="Fantasia">Fantasia</button>
+                    <button class="tag-chip spotlight-item" data-filter="Clássicos">Clássicos</button>
+                    <button class="tag-chip spotlight-item" data-filter="Técnico">Técnico</button>
+                    <button class="tag-chip spotlight-item" data-filter="Sci-Fi">Sci-Fi</button>
+                </div>
+                <div class="scroll-fade-right"></div>
+            </div>
+
+            <div class="dashboard-grid">
+
+                <section class="hero-card glass-panel spotlight-item animate-enter" style="animation-delay: 0.2s;">
+                    <div class="carousel-container" id="heroCarousel">
+                        <div class="hero-slide active">
+                            <div class="hero-content">
+                                <span class="tag-highlight">Leitura Atual</span>
+                                <h2>O Grande Gatsby</h2>
+                                <p>O brilho e a decadência do sonho americano na Era do Jazz.</p>
+                                <div class="hero-actions"><button class="primary-btn click-shrink">Continuar</button>
+                                </div>
+                            </div>
+                            <div class="hero-book-3d"><img
+                                    src="https://m.media-amazon.com/images/I/81af+MCATTL._AC_UF1000,1000_QL80_.jpg">
+                            </div>
+                        </div>
+                        <div class="hero-slide">
+                            <div class="hero-content">
+                                <span class="tag-highlight" style="background:var(--secondary)">Recomendado</span>
+                                <h2>Duna</h2>
+                                <p>A épica jornada de Paul Atreides no planeta deserto.</p>
+                                <div class="hero-actions"><button class="primary-btn click-shrink">Ver Detalhes</button>
+                                </div>
+                            </div>
+                            <div class="hero-book-3d"><img
+                                    src="https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-indicators">
+                        <span class="indicator active" onclick="goToSlide(0)"></span>
+                        <span class="indicator" onclick="goToSlide(1)"></span>
+                    </div>
+                </section>
+
+                <div class="right-column animate-enter" style="animation-delay: 0.3s;">
+                    <div class="stats-row">
+                        <div class="mini-stat glass-panel spotlight-item"><span class="stat-num"
+                                id="totalBooksCount">0</span><span class="stat-desc">Livros</span></div>
+                        <div class="mini-stat glass-panel spotlight-item"><span class="stat-num">4.8</span><span
+                                class="stat-desc">Média</span></div>
+                    </div>
+                    <div class="trending-authors glass-panel spotlight-item">
+                        <h4>Autores em Alta</h4>
+                        <div class="authors-list">
+                            <div class="author-circle"><img src="https://i.pravatar.cc/150?img=11"></div>
+                            <div class="author-circle"><img src="https://i.pravatar.cc/150?img=5"></div>
+                            <div class="author-circle"><img src="https://i.pravatar.cc/150?img=3"></div>
+                            <div class="author-circle add-author"><i class="ph ph-plus"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="full-width animate-enter" style="animation-delay: 0.4s;">
+                    <div class="section-header">
+                        <h3>Minha Estante</h3>
+                    </div>
+                    <div class="books-shelf" id="booksGrid">
+                    </div>
+                </section>
+
+                <section class="analytics-section full-width animate-enter" style="animation-delay: 0.5s;">
+                    <div class="section-header">
+                        <h3>Hábito de Leitura</h3>
+                        <div class="chart-legend"><span class="dot-legend"></span> Páginas Lidas</div>
+                    </div>
+                    <div class="chart-container glass-panel spotlight-item">
+                        <div class="chart-grid-lines">
+                            <div class="grid-line"></div>
+                            <div class="grid-line"></div>
+                            <div class="grid-line"></div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar" style="height: 0%;" data-val="40%" data-tooltip="40 Pgs"></div><span
+                                class="day">Seg</span>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar" style="height: 0%;" data-val="75%" data-tooltip="75 Pgs"></div><span
+                                class="day">Ter</span>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar" style="height: 0%;" data-val="30%" data-tooltip="30 Pgs"></div><span
+                                class="day">Qua</span>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar active" style="height: 0%;" data-val="100%" data-tooltip="110 Pgs"></div>
+                            <span class="day">Qui</span>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar" style="height: 0%;" data-val="55%" data-tooltip="55 Pgs"></div><span
+                                class="day">Sex</span>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar" style="height: 0%;" data-val="20%" data-tooltip="20 Pgs"></div><span
+                                class="day">Sáb</span>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar" style="height: 0%;" data-val="65%" data-tooltip="65 Pgs"></div><span
+                                class="day">Dom</span>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <div class="modal-overlay" id="bookModal">
+            <div class="modal-content">
+                <div class="modal-visual">
+                    <div class="visual-bg-glow"></div>
+                    <img id="m-cover" src="" class="book-3d-shadow">
+                </div>
+                <div class="modal-details">
+                    <div class="modal-header-row">
+                        <div class="modal-tags"><span class="modal-tag" id="m-tag">Gênero</span></div>
+                        <button class="close-modal click-shrink" onclick="closeModal()"><i class="ph ph-x"></i></button>
+                    </div>
+
+                    <h2 id="m-title">Titulo</h2>
+                    <p id="m-author" class="author">Autor</p>
+
+                    <div class="modal-stats-grid">
+                        <div class="stat-box"><i class="ph-fill ph-star"></i>
+                            <div><strong id="m-rating">4.5</strong><span>Avaliação</span></div>
+                        </div>
+                        <div class="stat-box"><i class="ph-fill ph-book-open"></i>
+                            <div><strong id="m-pages">--</strong><span>Páginas</span></div>
+                        </div>
+                        <div class="stat-box"><i class="ph-fill ph-globe"></i>
+                            <div><strong>PT-BR</strong><span>Idioma</span></div>
+                        </div>
+                    </div>
+
+                    <div class="scroll-desc">
+                        <h5 class="desc-label">Sinopse</h5>
+                        <p id="m-desc" class="modal-desc">Descrição...</p>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button class="btn-modal-primary click-shrink"><i class="ph-bold ph-book-bookmark"></i> Ler
+                            Agora</button>
+                        <button class="btn-modal-secondary click-shrink" id="btnDeleteBook" title="Excluir"><i
+                                class="ph ph-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="addBookModal">
+            <div class="modal-content" style="height: auto; max-height: 90vh; display: flex; flex-direction: column;">
+                <div class="modal-details" style="width: 100%; padding: 2rem;">
+                    <button class="close-modal click-shrink" onclick="closeAddModal()"><i class="ph ph-x"></i></button>
+                    <h2 style="margin-bottom: 20px;">Adicionar Novo Livro</h2>
+                    <form id="addBookForm" class="form-grid">
+                        <div class="form-group"><label>Título</label><input type="text" id="inpTitle" required
+                                placeholder="Ex: O Código Da Vinci"></div>
+                        <div class="form-group"><label>Autor</label><input type="text" id="inpAuthor" required
+                                placeholder="Ex: Dan Brown"></div>
+                        <div class="form-group"><label>Categoria</label>
+                            <select id="inpCategory">
+                                <option value="Ficção">Ficção</option>
+                                <option value="Romance">Romance</option>
+                                <option value="Fantasia">Fantasia</option>
+                                <option value="Clássicos">Clássicos</option>
+                                <option value="Técnico">Técnico</option>
+                                <option value="Sci-Fi">Sci-Fi</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>URL da Capa</label><input type="text" id="inpCover"
+                                placeholder="Cole o link..."><small style="color: var(--text-muted);">Deixe vazio para
+                                padrão.</small></div>
+                        <div class="form-group"><label>Descrição</label><textarea id="inpDesc" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn-modal-primary click-shrink" style="margin-top: 10px;">Salvar
+                            Livro</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="../script/home.js"></script>
+</body>
+
+</html>

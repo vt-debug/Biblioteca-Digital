@@ -1,0 +1,235 @@
+:root {
+    --bg-color: #0a0a0a; 
+    --text-color: #ffffff;
+    --accent-color: #6366f1; 
+    --gray-color: #888;
+    --easing: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    cursor: none;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+.cursor, .cursor-follower {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s, background 0.2s;
+}
+
+.cursor {
+    width: 8px;
+    height: 8px;
+    background: var(--text-color);
+}
+
+.cursor-follower {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.15s var(--easing);
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    mix-blend-mode: difference; 
+}
+
+.logo {
+    font-weight: 900;
+    font-size: 1.5rem;
+    letter-spacing: -1px;
+}
+
+.menu a {
+    color: var(--text-color);
+    text-decoration: none;
+    margin-left: 2rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.menu a:hover { opacity: 1; }
+
+.btn-login {
+    background: transparent;
+    border: 1px solid var(--text-color);
+    color: var(--text-color);
+    padding: 0.5rem 1.5rem;
+    margin-left: 2rem;
+    border-radius: 50px;
+    transition: all 0.3s var(--easing);
+}
+
+.btn-login:hover {
+    background: var(--text-color);
+    color: var(--bg-color);
+}
+
+/* --- Hero Section --- */
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 0 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-content {
+    max-width: 800px;
+    z-index: 2;
+}
+
+.subtitle {
+    color: var(--accent-color);
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+}
+
+.main-title {
+    font-size: 5rem;
+    line-height: 1;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    letter-spacing: -2px;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-title .highlight {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--text-color); 
+}
+
+.description {
+    font-size: 1.2rem;
+    color: var(--gray-color);
+    max-width: 500px;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+}
+
+.btn-primary {
+    background: var(--accent-color);
+    color: white;
+    padding: 1rem 2.5rem;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: transform 0.3s var(--easing);
+    display: inline-block;
+}
+
+.btn-primary:hover { transform: translateY(-5px); }
+
+.btn-secondary {
+    color: var(--text-color);
+    margin-left: 2rem;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.hero-visual {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    z-index: 1;
+}
+
+.gradient-sphere {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(99,102,241,0.4) 0%, rgba(10,10,10,0) 70%);
+    transform: translate(-50%, -50%);
+    filter: blur(60px);
+    animation: pulse 8s infinite alternate;
+}
+
+@keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    100% { transform: translate(-50%, -50%) scale(1.2); }
+}
+
+/* --- Features Section --- */
+.features {
+    padding: 8rem 4rem;
+    background: #0f0f0f;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4rem;
+}
+
+.feature-item {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 2rem;
+}
+
+.feature-number {
+    font-size: 3rem;
+    font-weight: 900;
+    color: rgba(255,255,255,0.05);
+    margin-bottom: 1rem;
+}
+
+.reveal-text {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 1s var(--easing);
+}
+
+.reveal-text.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fade-up {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s var(--easing);
+}
+
+.fade-up.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-title { font-size: 3rem; }
+    .container { grid-template-columns: 1fr; }
+    .navbar { padding: 1.5rem; }
+    .hero { padding: 0 1.5rem; }
+}
