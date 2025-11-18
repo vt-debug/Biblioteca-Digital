@@ -37,7 +37,7 @@ body {
     .cursor-dot {
         width: 6px;
         height: 6px;
-        background: var(--secondary);
+        background: var(--primary-dark);
         position: fixed;
         border-radius: 50%;
         pointer-events: none;
