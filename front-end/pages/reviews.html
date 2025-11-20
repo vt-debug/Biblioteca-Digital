@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Avaliações | Bibliotheca</title>
+
+    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="../css/reviews.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+    <div class="bg-ambient"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div id="toast" class="toast-notification"><i class="ph-fill ph-check-circle"></i> <span>Sucesso!</span></div>
+
+    <div class="dashboard-container">
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header-mobile">
+                <span class="logo-text">Bibliotheca</span>
+                <button class="close-sidebar-btn"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="logo-container desktop-only">
+                <i class="ph-fill ph-books"></i>
+                <span class="logo-text">Bibliotheca</span>
+            </div>
+            <nav class="menu">
+                <div class="menu-label">Navegação</div>
+                <a href="home.html" class="menu-item spotlight-item"><i class="ph ph-squares-four"></i><span>Visão
+                        Geral</span></a>
+                <a href="explore.html" class="menu-item spotlight-item"><i class="ph ph-compass"></i><span>Explorar
+                        Acervo</span></a>
+                <a href="lists.html" class="menu-item spotlight-item"><i class="ph ph-bookmark-simple"></i><span>Minhas
+                        Listas</span></a>
+                <div class="menu-label">Comunidade</div>
+                <a href="community.html" class="menu-item spotlight-item"><i class="ph ph-users"></i><span>Clube do
+                        Livro</span></a>
+                <a href="reviews.html" class="menu-item active spotlight-item"><i
+                        class="ph ph-star-half"></i><span>Avaliações</span></a>
+                <div class="menu-label">Conta</div>
+                <a href="settings.html" class="menu-item spotlight-item"><i
+                        class="ph ph-gear"></i><span>Configurações</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="login.html" class="logout-btn spotlight-item"><i class="ph ph-sign-out"></i>
+                    <span>Sair</span></a>
+            </div>
+        </aside>
+
+        <main class="main-content reviews-content">
+
+            <header class="top-bar" id="topBar">
+                <div class="top-bar-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="ph ph-list"></i></button>
+                    <div class="greeting">
+                        <h1>Diário de Leitura</h1>
+                        <span class="user-name">Suas opiniões imortalizadas.</span>
+                    </div>
+                </div>
+                <div class="top-actions">
+                    <button class="btn-create click-shrink" onclick="openReviewModal()"><i
+                            class="ph-bold ph-pencil-simple"></i> Nova Resenha</button>
+                    <div class="profile-wrapper"><img src="https://i.pravatar.cc/150?img=68"
+                            class="avatar click-shrink"></div>
+                </div>
+            </header>
+
+            <section class="reviews-stats animate-enter" style="animation-delay: 0.1s;">
+                <div class="stat-card glass-panel spotlight-item">
+                    <div class="stat-icon"><i class="ph-fill ph-notebook"></i></div>
+                    <div class="stat-info">
+                        <h3 id="totalReviews">0</h3>
+                        <span>Resenhas Feitas</span>
+                    </div>
+                </div>
+                <div class="stat-card glass-panel spotlight-item">
+                    <div class="stat-icon" style="background: rgba(234, 179, 8, 0.1); color: #eab308;"><i
+                            class="ph-fill ph-star"></i></div>
+                    <div class="stat-info">
+                        <h3 id="avgRating">0.0</h3>
+                        <span>Nota Média</span>
+                    </div>
+                </div>
+                <div class="stat-card glass-panel spotlight-item">
+                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i
+                            class="ph-fill ph-book-open"></i></div>
+                    <div class="stat-info">
+                        <h3 id="totalPages">0</h3>
+                        <span>Páginas Lidas</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="pending-section animate-enter" style="animation-delay: 0.2s;">
+                <div class="section-header">
+                    <h3>Pendentes <span class="counter-badge" id="pendingCount">0</span></h3>
+                    <p>Livros terminados aguardando sua opinião.</p>
+                </div>
+                <div class="pending-grid" id="pendingContainer">
+                </div>
+            </section>
+
+            <section class="reviews-feed animate-enter" style="animation-delay: 0.3s;">
+                <div class="section-header">
+                    <h3>Histórico</h3>
+                    <div class="view-filters">
+                        <button class="filter-link active" onclick="filterReviews('all')">Todos</button>
+                        <button class="filter-link" onclick="filterReviews('5star')">5 Estrelas</button>
+                        <button class="filter-link" onclick="filterReviews('fav')">Favoritos</button>
+                    </div>
+                </div>
+                <div class="reviews-masonry" id="reviewsContainer">
+                </div>
+            </section>
+
+        </main>
+
+        <div class="modal-overlay" id="reviewModal">
+            <div class="modal-content modal-form">
+                <div class="modal-header-bg">
+                    <h3>Escrever Avaliação</h3>
+                    <button class="close-modal-light click-shrink" onclick="closeReviewModal()"><i
+                            class="ph ph-x"></i></button>
+                </div>
+                <div class="modal-body">
+                    <form id="reviewForm">
+                        <div class="form-grid-split">
+                            <div class="book-select-section">
+                                <label class="section-label">Livro Lido</label>
+                                <div class="book-select-wrapper">
+                                    <div class="selected-book-preview" id="selectedBookPreview">
+                                        <i class="ph ph-book-open-text"></i>
+                                    </div>
+                                    <div class="select-container">
+                                        <select id="bookSelect" required onchange="updateBookPreview()">
+                                            <option value="" disabled selected>Selecione da lista...</option>
+                                        </select>
+                                        <i class="ph ph-caret-down select-arrow"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="rating-section">
+                                <label class="section-label">Sua Classificação</label>
+                                <div class="star-rating" id="starRatingInput">
+                                    <input type="radio" id="star5" name="rating" value="5"><label for="star5"
+                                        title="Incrível"><i class="ph-fill ph-star"></i></label>
+                                    <input type="radio" id="star4" name="rating" value="4"><label for="star4"
+                                        title="Muito bom"><i class="ph-fill ph-star"></i></label>
+                                    <input type="radio" id="star3" name="rating" value="3"><label for="star3"
+                                        title="Bom"><i class="ph-fill ph-star"></i></label>
+                                    <input type="radio" id="star2" name="rating" value="2"><label for="star2"
+                                        title="Ruim"><i class="ph-fill ph-star"></i></label>
+                                    <input type="radio" id="star1" name="rating" value="1"><label for="star1"
+                                        title="Péssimo"><i class="ph-fill ph-star"></i></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="section-label">Sua Opinião</label>
+                            <textarea id="reviewText" rows="5"
+                                placeholder="O que mais te marcou na leitura? A escrita flui bem?..."
+                                required></textarea>
+                        </div>
+                        <div class="review-options">
+                            <label class="checkbox-label click-shrink">
+                                <input type="checkbox" id="spoilerCheck">
+                                <span class="checkmark"></span>
+                                Contém Spoilers
+                            </label>
+                            <label class="checkbox-label click-shrink">
+                                <input type="checkbox" id="favoriteCheck">
+                                <span class="checkmark heart"><i class="ph-fill ph-heart"></i></span>
+                                Adicionar aos Favoritos
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-modal-primary full-width-btn click-shrink">Publicar no
+                            Diário</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="deleteConfirmModal">
+            <div class="modal-content modal-confirm">
+                <div class="modal-header-warning">
+                    <h3><i class="ph-fill ph-warning-circle"></i> Excluir?</h3>
+                    <button class="close-modal-warning click-shrink" onclick="closeDeleteModal()"><i
+                            class="ph ph-x"></i></button>
+                </div>
+                <div class="modal-body-confirm">
+                    <p>Essa ação não pode ser desfeita.</p>
+                    <div class="confirm-actions">
+                        <button class="btn-cancel click-shrink" onclick="closeDeleteModal()">Cancelar</button>
+                        <button class="btn-confirm-delete click-shrink" onclick="confirmDelete()">Sim, excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../script/reviews.js"></script>
+</body>
+
+</html>
