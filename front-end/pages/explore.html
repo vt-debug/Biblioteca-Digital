@@ -22,6 +22,9 @@
     <div class="bg-ambient"></div>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+    <div id="toast" class="toast-notification"><i class="ph-fill ph-check-circle"></i> <span>Adicionado à lista!</span>
+    </div>
+
     <div class="dashboard-container">
 
         <aside class="sidebar" id="sidebar">
@@ -62,135 +65,103 @@
                 </div>
                 <div class="search-container spotlight-item big-search">
                     <i class="ph ph-magnifying-glass"></i>
-                    <input type="text" placeholder="Pesquise por título, autor, ISBN ou gênero...">
-                    <button class="filter-trigger"><i class="ph ph-sliders"></i></button>
+                    <input type="text" id="searchInput" placeholder="Pesquise por título, autor, ISBN ou gênero...">
+                    <button class="filter-trigger" id="resetSearch" style="display:none"><i
+                            class="ph ph-x"></i></button>
                 </div>
                 <div class="profile-wrapper">
                     <img src="https://i.pravatar.cc/150?img=68" class="avatar click-shrink">
                 </div>
             </header>
 
-            <section class="cinematic-hero animate-enter" style="animation-delay: 0.1s;">
-                <div class="hero-carousel-wrapper" id="heroCarousel">
-                    <div class="c-slide active"
-                        style="background-image: url('https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=1400&auto=format&fit=crop')">
-                        <div class="c-overlay"></div>
-                        <div class="c-content">
-                            <div class="c-badge">Destaque da Semana</div>
-                            <h1>A Sombra do Vento</h1>
-                            <p>Uma narrativa inesquecível sobre os segredos do coração e o encantamento dos livros na
-                                Barcelona gótica.</p>
-                            <div class="c-actions">
-                                <button class="btn-blur click-shrink"><i class="ph-fill ph-book-open"></i> Ler
-                                    Amostra</button>
-                            </div>
-                        </div>
-                        <div class="c-visual tilt-element">
-                            <img src="https://m.media-amazon.com/images/I/81Di+1uG+BL._AC_UF1000,1000_QL80_.jpg">
-                        </div>
-                    </div>
-                    <div class="c-slide"
-                        style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1400&auto=format&fit=crop')">
-                        <div class="c-overlay"></div>
-                        <div class="c-content">
-                            <div class="c-badge" style="background: #3b82f6;">Sci-Fi Awards</div>
-                            <h1>Duna: A Saga</h1>
-                            <p>Não tenha medo. O medo mata a mente. Acompanhe a jornada messiânica de Paul Atreides.</p>
-                            <div class="c-actions">
-                                <button class="btn-blur click-shrink">Ver Coleção</button>
-                            </div>
-                        </div>
-                        <div class="c-visual tilt-element">
-                            <img src="https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg">
-                        </div>
-                    </div>
-                </div>
-                <div class="c-indicators">
-                    <span class="c-dot active" onclick="goToSlide(0)"></span>
-                    <span class="c-dot" onclick="goToSlide(1)"></span>
-                </div>
+            <section class="search-results-section" id="searchResultsSection" style="display: none;">
+                <h3 class="section-title">Resultados da Busca</h3>
+                <div class="books-grid-search" id="searchResultsGrid"></div>
             </section>
 
-            <div class="marquee-section animate-enter" style="animation-delay: 0.15s;">
-                <div class="marquee-track">
-                    <span>LANÇAMENTOS 🔥</span><span>BEST-SELLERS 🏆</span><span>NOBEL 🎖️</span>
-                    <span>DARK ACADEMIA 🕯️</span><span>SCI-FI 🚀</span><span>LANÇAMENTOS 🔥</span>
+            <div id="defaultContent">
+
+                <section class="cinematic-hero animate-enter">
+                    <div class="hero-carousel-wrapper" id="heroCarousel"></div>
+                    <div class="c-indicators" id="heroIndicators"></div>
+                </section>
+
+                <div class="marquee-section animate-enter">
+                    <div class="marquee-track">
+                        <span>LANÇAMENTOS 🔥</span><span>BEST-SELLERS 🏆</span><span>NOBEL 🎖️</span>
+                        <span>DARK ACADEMIA 🕯️</span><span>SCI-FI 🚀</span><span>LANÇAMENTOS 🔥</span>
+                    </div>
                 </div>
+
+                <div class="categories-section animate-enter">
+                    <h3 class="section-title">Navegue por Gênero</h3>
+                    <div class="bento-grid">
+                        <div class="bento-box box-large spotlight-item click-shrink" data-cat="Fantasia"
+                            style="--accent: #eab308;">
+                            <div class="bento-icon"><i class="ph-fill ph-sword"></i></div><span>Fantasia</span>
+                        </div>
+                        <div class="bento-box spotlight-item click-shrink" data-cat="Romance"
+                            style="--accent: #ef4444;">
+                            <div class="bento-icon"><i class="ph-fill ph-heart"></i></div><span>Romance</span>
+                        </div>
+                        <div class="bento-box spotlight-item click-shrink" data-cat="Sci-Fi" style="--accent: #3b82f6;">
+                            <div class="bento-icon"><i class="ph-fill ph-rocket-launch"></i></div><span>Sci-Fi</span>
+                        </div>
+                        <div class="bento-box spotlight-item click-shrink" data-cat="Terror" style="--accent: #8b5cf6;">
+                            <div class="bento-icon"><i class="ph-fill ph-ghost"></i></div><span>Terror</span>
+                        </div>
+                        <div class="bento-box box-wide spotlight-item click-shrink" data-cat="Desenvolvimento"
+                            style="--accent: #10b981;">
+                            <div class="bento-icon"><i class="ph-fill ph-brain"></i></div><span>Desenvolvimento</span>
+                            <i class="ph ph-arrow-right absolute-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="spotlight-release animate-enter" id="spotlightSection"></section>
+
+                <section class="ranking-section animate-enter">
+                    <h3 class="section-title">Top 10 Brasil</h3>
+                    <div class="books-slider drag-scroll" id="rankingRow"></div>
+                </section>
+
+                <section class="shelf-row animate-enter">
+                    <div class="row-header">
+                        <h3>Audiobooks Populares <i class="ph-fill ph-headphones text-accent"></i></h3>
+                    </div>
+                    <div class="books-slider drag-scroll" id="audioRow"></div>
+                </section>
+
             </div>
 
-            <div class="categories-section animate-enter" style="animation-delay: 0.2s;">
-                <h3 class="section-title">Navegue por Gênero</h3>
-                <div class="bento-grid">
-                    <div class="bento-box box-large spotlight-item click-shrink" style="--accent: #eab308;">
-                        <div class="bento-icon"><i class="ph-fill ph-sword"></i></div>
-                        <span>Fantasia</span><small>120 Títulos</small>
-                    </div>
-                    <div class="bento-box spotlight-item click-shrink" style="--accent: #ef4444;">
-                        <div class="bento-icon"><i class="ph-fill ph-heart"></i></div><span>Romance</span>
-                    </div>
-                    <div class="bento-box spotlight-item click-shrink" style="--accent: #3b82f6;">
-                        <div class="bento-icon"><i class="ph-fill ph-rocket-launch"></i></div><span>Sci-Fi</span>
-                    </div>
-                    <div class="bento-box spotlight-item click-shrink" style="--accent: #8b5cf6;">
-                        <div class="bento-icon"><i class="ph-fill ph-ghost"></i></div><span>Terror</span>
-                    </div>
-                    <div class="bento-box box-wide spotlight-item click-shrink" style="--accent: #10b981;">
-                        <div class="bento-icon"><i class="ph-fill ph-brain"></i></div>
-                        <span>Desenvolvimento Pessoal</span>
-                    </div>
-                </div>
-            </div>
-
-            <section class="spotlight-release animate-enter" style="animation-delay: 0.3s;">
-                <div class="release-noise"></div>
-                <div class="release-glow"></div>
-                <div class="release-container">
-                    <div class="release-info">
-                        <div class="release-badge"><i class="ph-fill ph-fire"></i> Lançamento da Semana</div>
-                        <h2>A Biblioteca da Meia-Noite</h2>
-                        <p class="release-author">Matt Haig</p>
-                        <div class="release-synopsis">
-                            <p>"Entre a vida e a morte, existe uma biblioteca. E dentro dessa biblioteca, as prateleiras
-                                não têm fim."</p>
-                        </div>
-                        <div class="release-stats">
-                            <div class="r-stat"><i class="ph-fill ph-star"></i> 4.8</div>
-                            <div class="r-stat"><i class="ph-fill ph-book-open"></i> 308 Pgs</div>
-                            <div class="r-stat"><i class="ph-fill ph-globe"></i> Ficção</div>
-                        </div>
-                        <div class="release-actions">
-                            <button class="btn-release-primary click-shrink">Ler Agora</button>
-                            <button class="btn-release-secondary click-shrink"><i class="ph ph-plus"></i></button>
-                        </div>
-                    </div>
-                    <div class="release-visual tilt-element">
-                        <img src="https://m.media-amazon.com/images/I/81M8pL+Y0mL._AC_UF1000,1000_QL80_.jpg">
-                        <div class="floating-badge">Best-seller</div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="ranking-section animate-enter" style="animation-delay: 0.4s;">
-                <h3 class="section-title">Top 10 Brasil</h3>
-                <div class="books-slider drag-scroll" id="rankingRow">
-                    <div class="ranking-card click-shrink spotlight-item"><span class="rank-number">1</span><img
-                            src="https://m.media-amazon.com/images/I/91b8oNwaV1L._AC_UF1000,1000_QL80_.jpg"></div>
-                    <div class="ranking-card click-shrink spotlight-item"><span class="rank-number">2</span><img
-                            src="https://m.media-amazon.com/images/I/81ibfYk4qmL._AC_UF1000,1000_QL80_.jpg"></div>
-                    <div class="ranking-card click-shrink spotlight-item"><span class="rank-number">3</span><img
-                            src="https://m.media-amazon.com/images/I/81eB+7+CkUL._AC_UF1000,1000_QL80_.jpg"></div>
-                    <div class="ranking-card click-shrink spotlight-item"><span class="rank-number">4</span><img
-                            src="https://m.media-amazon.com/images/I/61t0bwtZWRL._AC_UF1000,1000_QL80_.jpg"></div>
-                    <div class="ranking-card click-shrink spotlight-item"><span class="rank-number">5</span><img
-                            src="https://m.media-amazon.com/images/I/81X4R7QhFkL._AC_UF1000,1000_QL80_.jpg"></div>
-                </div>
-            </section>
-
-            <footer class="dashboard-footer full-width">
-                <p>© 2025 Bibliotheca Premium.</p>
-            </footer>
 
         </main>
+
+        <div class="modal-overlay" id="bookModal">
+            <div class="modal-content">
+                <div class="modal-visual"><img id="m-cover" src=""></div>
+                <div class="modal-details">
+                    <button class="close-modal click-shrink" onclick="closeModal()"><i class="ph ph-x"></i></button>
+                    <div class="modal-tags"><span class="modal-tag" id="m-tag">Gênero</span></div>
+                    <h2 id="m-title">Titulo</h2>
+                    <p id="m-author" class="author">Autor</p>
+                    <div class="modal-meta">
+                        <div class="meta-item"><strong id="m-rating">4.5</strong><span>Nota</span></div>
+                        <div class="meta-divider"></div>
+                        <div class="meta-item"><strong id="m-pages">--</strong><span>Págs</span></div>
+                    </div>
+                    <div class="scroll-desc">
+                        <p id="m-desc" class="modal-desc">...</p>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn-modal-primary click-shrink">Ler Agora</button>
+                        <button class="btn-modal-secondary click-shrink" onclick="addToLibrary(null, true)"><i
+                                class="ph ph-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
     <script src="../script/explore.js"></script>
 </body>
