@@ -1320,3 +1320,66 @@ body {
         padding: 10px;
     }
 }
+
+/* ... (Mantenha todo o CSS anterior) ... */
+
+/* --- OVERRIDES GLOBAIS DE PREFERÊNCIA --- */
+
+/* 1. Desativa Cursor Customizado */
+html.no-custom-cursor * {
+    cursor: auto !important;
+    /* Força a seta do Windows */
+}
+
+html.no-custom-cursor .cursor-dot,
+html.no-custom-cursor .cursor-outline {
+    display: none !important;
+    /* Esconde as bolinhas */
+}
+
+/* Corrige elementos que precisam de pointer específico */
+html.no-custom-cursor a,
+html.no-custom-cursor button,
+html.no-custom-cursor .click-shrink,
+html.no-custom-cursor .spotlight-item {
+    cursor: pointer !important;
+}
+
+/* 2. Aplicação do Modo Escuro Global */
+html.dark-mode body {
+    --bg: #121212;
+    --text-main: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --white: #1e1e1e;
+    --glass-bg: rgba(30, 30, 30, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --secondary: #d4b48c;
+    --primary: #be9b73;
+    --paper-bg: #1e1e1e;
+    --paper-border: rgba(255, 255, 255, 0.05);
+}
+
+/* Ajustes visuais para Dark Mode */
+html.dark-mode .sidebar {
+    background: #0f0a08 !important;
+}
+
+html.dark-mode .big-search {
+    background: #1e1e1e;
+    border-color: #333;
+}
+
+html.dark-mode .big-search input {
+    color: #fff;
+}
+
+html.dark-mode .stat-card,
+html.dark-mode .bento-box {
+    background: #1e1e1e;
+}
+
+html.dark-mode .ranking-card .rank-number {
+    color: #121212;
+    text-shadow: none;
+    opacity: 0.1;
+}

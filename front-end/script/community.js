@@ -1,3 +1,22 @@
+function applyGlobalPreferences() {
+    const isDark = localStorage.getItem('bibliotheca_darkmode') === 'true';
+    if (isDark) document.documentElement.classList.add('dark-mode');
+    else document.documentElement.classList.remove('dark-mode');
+
+    const cursorPref = localStorage.getItem('bibliotheca_cursor');
+    if (cursorPref === 'false') document.documentElement.classList.add('no-custom-cursor');
+    else document.documentElement.classList.remove('no-custom-cursor');
+
+    const savedAvatar = localStorage.getItem('bibliotheca_avatar');
+    if (savedAvatar) {
+        document.querySelectorAll('.avatar, .avatar-small').forEach(img => {
+            if (img.closest('.profile-wrapper') || img.closest('.create-post-card')) {
+                img.src = savedAvatar;
+            }
+        });
+    }
+}
+
 const initialPosts = [
     {
         id: 1,
@@ -42,6 +61,7 @@ let eventReminders = JSON.parse(localStorage.getItem('bibliotheca_events')) || [
 let currentFilter = 'hot';
 
 document.addEventListener('DOMContentLoaded', () => {
+    applyGlobalPreferences();
     renderFeed();
     renderClubs();
     restoreEvents();

@@ -1,10 +1,29 @@
+function applyGlobalPreferences() {
+    const isDark = localStorage.getItem('bibliotheca_darkmode') === 'true';
+    if (isDark) document.documentElement.classList.add('dark-mode');
+    else document.documentElement.classList.remove('dark-mode');
+
+    const cursorPref = localStorage.getItem('bibliotheca_cursor');
+    if (cursorPref === 'false') document.documentElement.classList.add('no-custom-cursor');
+    else document.documentElement.classList.remove('no-custom-cursor');
+
+    const savedAvatar = localStorage.getItem('bibliotheca_avatar');
+    if (savedAvatar) {
+        document.querySelectorAll('.avatar, .avatar-small').forEach(img => {
+            if (img.closest('.profile-wrapper') || img.closest('.create-post-card')) {
+                img.src = savedAvatar;
+            }
+        });
+    }
+}
+
 const initialBooks = [
     {
         id: 1,
         title: "A Sombra do Vento",
         author: "Carlos Ruiz Zafón",
         category: "Romance",
-        cover: "https://m.media-amazon.com/images/I/81Di+1uG+BL._AC_UF1000,1000_QL80_.jpg",
+        cover: "https://m.media-amazon.com/images/I/91xOzA3VHtL.jpg",
         rating: "4.9",
         pages: 400,
         desc: "Um mistério literário ambientado na Barcelona da primeira metade do século XX, onde um jovem escolhe um livro que mudará sua vida."
@@ -34,6 +53,7 @@ const initialBooks = [
 let myBooks = JSON.parse(localStorage.getItem('bibliotheca_books')) || initialBooks;
 
 document.addEventListener('DOMContentLoaded', () => {
+    applyGlobalPreferences();
     renderBooks();
     updateStats();
     initCursor();

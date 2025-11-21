@@ -1,3 +1,23 @@
+// --- APLICAR PREFERÊNCIAS GLOBAIS (Cole no final de todos os arquivos JS) ---
+function applyGlobalPreferences() {
+    const isDark = localStorage.getItem('bibliotheca_darkmode') === 'true';
+    if (isDark) document.documentElement.classList.add('dark-mode');
+    else document.documentElement.classList.remove('dark-mode');
+
+    const cursorPref = localStorage.getItem('bibliotheca_cursor');
+    if (cursorPref === 'false') document.documentElement.classList.add('no-custom-cursor');
+    else document.documentElement.classList.remove('no-custom-cursor');
+
+    const savedAvatar = localStorage.getItem('bibliotheca_avatar');
+    if (savedAvatar) {
+        document.querySelectorAll('.avatar, .avatar-small').forEach(img => {
+            if (img.closest('.profile-wrapper') || img.closest('.create-post-card')) {
+                img.src = savedAvatar;
+            }
+        });
+    }
+}
+
 const readBooks = [
     { id: 101, title: "Duna", author: "Frank Herbert", cover: "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg" },
     { id: 102, title: "1984", author: "George Orwell", cover: "https://m.media-amazon.com/images/I/91b8oNwaV1L._AC_UF1000,1000_QL80_.jpg" },
@@ -39,6 +59,7 @@ let pendingBooks = readBooks.filter(book => !myReviews.some(r => r.bookId === bo
 let reviewIdToDelete = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    applyGlobalPreferences();
     updateUI();
     initUI();
     setupReviewForm();

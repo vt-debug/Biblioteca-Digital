@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Configurações | Bibliotheca</title>
+    
+    <!-- Base Styles -->
+    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="../css/settings.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Script de Tema (Roda antes do corpo para evitar flash) -->
+    <script>
+        // Verifica preferência salva ou do sistema
+        const savedTheme = localStorage.getItem('bibliotheca_darkmode');
+        if (savedTheme === 'true') {
+            document.documentElement.classList.add('dark-mode');
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Efeitos Sutis -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+    <div class="bg-ambient"></div>
+    
+    <!-- Toast (Notificação Fixa) -->
+    <div id="toast" class="toast-notification"><i class="ph-fill ph-check-circle"></i> <span>Salvo!</span></div>
+
+    <div class="dashboard-container">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header-mobile"><span class="logo-text">Bibliotheca</span><button class="close-sidebar-btn"><i class="ph ph-x"></i></button></div>
+            <div class="logo-container desktop-only"><i class="ph-fill ph-books"></i><span class="logo-text">Bibliotheca</span></div>
+            <nav class="menu">
+                <div class="menu-label">Navegação</div>
+                <a href="home.html" class="menu-item spotlight-item"><i class="ph ph-squares-four"></i><span>Visão Geral</span></a>
+                <a href="explore.html" class="menu-item spotlight-item"><i class="ph ph-compass"></i><span>Explorar Acervo</span></a>
+                <a href="lists.html" class="menu-item spotlight-item"><i class="ph ph-bookmark-simple"></i><span>Minhas Listas</span></a>
+                <div class="menu-label">Comunidade</div>
+                <a href="community.html" class="menu-item spotlight-item"><i class="ph ph-users"></i><span>Clube do Livro</span></a>
+                <a href="reviews.html" class="menu-item spotlight-item"><i class="ph ph-star-half"></i><span>Avaliações</span></a>
+                <div class="menu-label">Sistema</div>
+                <a href="settings.html" class="menu-item active spotlight-item"><i class="ph ph-gear"></i><span>Configurações</span></a>
+            </nav>
+            <div class="sidebar-footer"><a href="login.html" class="logout-btn spotlight-item"><i class="ph ph-sign-out"></i> <span>Sair</span></a></div>
+        </aside>
+
+        <main class="main-content settings-content">
+            
+            <!-- Header Elegante -->
+            <header class="settings-header animate-enter">
+                <div class="header-title">
+                    <h1>Minhas Preferências</h1>
+                    <p>Personalize sua experiência de leitura.</p>
+                </div>
+                <div class="profile-wrapper">
+                    <img src="https://i.pravatar.cc/150?img=68" id="headerAvatar" class="avatar click-shrink">
+                </div>
+            </header>
+
+            <div class="settings-grid">
+                
+                <!-- CARD DE PERFIL -->
+                <section class="profile-card paper-panel spotlight-item animate-enter" style="animation-delay: 0.1s;">
+                    <div class="profile-decoration"><i class="ph-fill ph-sparkle"></i></div>
+                    <div class="profile-inner">
+                        <div class="avatar-container click-shrink">
+                            <img src="https://i.pravatar.cc/150?img=68" id="settingsAvatar">
+                            <div class="edit-badge"><i class="ph-fill ph-camera"></i></div>
+                            <input type="file" id="avatarUpload" hidden accept="image/*">
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="userNameDisplay">Leitor Voraz</h2>
+                            <span class="member-badge">Membro Premium</span>
+                            <div class="bio-text">"Amante de café e livros antigos."</div>
+                            <button class="btn-soft click-shrink" onclick="alert('Em breve: Edição de nome/bio')">Editar Perfil</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- APARÊNCIA -->
+                <section class="settings-section paper-panel spotlight-item animate-enter" style="animation-delay: 0.2s;">
+                    <h3><i class="ph-fill ph-paint-brush-broad"></i> Aparência</h3>
+                    
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <h4>Modo Noturno</h4>
+                            <p>Alterne para o tema escuro.</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="darkModeToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <h4>Cursor Personalizado</h4>
+                            <p>Usar ponteiro estilizado.</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="customCursorToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- NOTIFICAÇÕES -->
+                <section class="settings-section paper-panel spotlight-item animate-enter" style="animation-delay: 0.3s;">
+                    <h3><i class="ph-fill ph-bell-ringing"></i> Avisos</h3>
+                    
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <h4>Lembretes de Leitura</h4>
+                            <p>Notificar horários de meta.</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="reminderToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <h4>Novidades do Clube</h4>
+                            <p>Atualizações de grupos.</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="clubNewsToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- ZONA DE DADOS -->
+                <section class="data-zone paper-panel spotlight-item animate-enter" style="animation-delay: 0.4s;">
+                    <h3><i class="ph-fill ph-database"></i> Gerenciar Dados</h3>
+                    <p class="data-desc">Limpe o cache local ou baixe seus registros.</p>
+                    
+                    <div class="data-actions">
+                        <button class="btn-outline click-shrink danger" onclick="clearCache()">
+                            <i class="ph ph-trash"></i> Resetar Tudo
+                        </button>
+                        <button class="btn-outline click-shrink" onclick="downloadData()">
+                            <i class="ph ph-download-simple"></i> Baixar JSON
+                        </button>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="../script/settings.js"></script>
+</body>
+</html>

@@ -1,28 +1,48 @@
+function applyGlobalPreferences() {
+    const isDark = localStorage.getItem('bibliotheca_darkmode') === 'true';
+    if (isDark) document.documentElement.classList.add('dark-mode');
+    else document.documentElement.classList.remove('dark-mode');
+
+    const cursorPref = localStorage.getItem('bibliotheca_cursor');
+    if (cursorPref === 'false') document.documentElement.classList.add('no-custom-cursor');
+    else document.documentElement.classList.remove('no-custom-cursor');
+
+    const savedAvatar = localStorage.getItem('bibliotheca_avatar');
+    if (savedAvatar) {
+        document.querySelectorAll('.avatar, .avatar-small').forEach(img => {
+            if (img.closest('.profile-wrapper') || img.closest('.create-post-card')) {
+                img.src = savedAvatar;
+            }
+        });
+    }
+}
+
 const db = {
     hero: [
         { id: 101, title: "Duna: A Saga", desc: "A jornada messiânica de Paul Atreides.", badge: "Sci-Fi Awards", img: "https://m.media-amazon.com/images/I/81ym3QUd3KL._AC_UF1000,1000_QL80_.jpg", bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1472&auto=format&fit=crop" },
-        { id: 102, title: "A Paciente Silenciosa", desc: "O assassinato brutal e o silêncio absoluto.", badge: "Thriller", img: "https://m.media-amazon.com/images/I/715O17j4y-L._AC_UF1000,1000_QL80_.jpg", bg: "https://images.unsplash.com/photo-1626668011687-8b4a0d307915?q=80&w=1470&auto=format&fit=crop" }
+        { id: 102, title: "A Paciente Silenciosa", desc: "O assassinato brutal e o silêncio absoluto.", badge: "Thriller", img: "https://images.dlivros.org/Alex-Michaelides/paciente-silenciosa-alex-michaelides_large.webp", bg: "https://www.shutterstock.com/image-vector/deep-blue-grunge-texture-background-600nw-2654889733.jpg" }
     ],
     spotlight: {
         id: 201, title: "A Biblioteca da Meia-Noite", author: "Matt Haig", rating: 4.8, pages: 308, genre: "Ficção",
         desc: "Entre a vida e a morte, existe uma biblioteca. Cada livro oferece uma chance de experimentar outra vida.",
-        img: "https://m.media-amazon.com/images/I/81M8pL+Y0mL._AC_UF1000,1000_QL80_.jpg"
+        img: "https://images.dlivros.org/Matt-Haig/biblioteca-meia-noite-matt-haig_medium.webp"
     },
     ranking: [
         { id: 1, rank: 1, title: "1984", author: "George Orwell", img: "https://m.media-amazon.com/images/I/91b8oNwaV1L._AC_UF1000,1000_QL80_.jpg", category: "Ficção" },
         { id: 2, rank: 2, title: "Harry Potter", author: "J.K. Rowling", img: "https://m.media-amazon.com/images/I/81ibfYk4qmL._AC_UF1000,1000_QL80_.jpg", category: "Fantasia" },
         { id: 3, rank: 3, title: "O Senhor dos Anéis", author: "J.R.R. Tolkien", img: "https://m.media-amazon.com/images/I/81X4R7QhFkL._AC_UF1000,1000_QL80_.jpg", category: "Fantasia" },
-        { id: 4, rank: 4, title: "O Alquimista", author: "Paulo Coelho", img: "https://m.media-amazon.com/images/I/61t0bwtZWRL._AC_UF1000,1000_QL80_.jpg", category: "Romance" },
-        { id: 5, rank: 5, title: "It: A Coisa", author: "Stephen King", img: "https://m.media-amazon.com/images/I/71+p+9D+5BL._AC_UF1000,1000_QL80_.jpg", category: "Terror" }
+        { id: 4, rank: 4, title: "O Alquimista", author: "Paulo Coelho", img: "https://bibliotecamundial.com.br/wp-content/uploads/2025/01/o-alquimista-paulo-coelho.webp", category: "Romance" },
+        { id: 5, rank: 5, title: "It: A Coisa", author: "Stephen King", img: "https://play-lh.googleusercontent.com/WxYq6KkczU1KQWyFM9O6ip9oi14xb3dfH6TUoSj6MVfxjtPzBAt925siy1rf-gfTEzAW=w240-h480-rw", category: "Terror" }
     ],
     audiobooks: [
-        { id: 301, title: "Verity", duration: "12h 30m", img: "https://m.media-amazon.com/images/I/818+2m6h23L._AC_UF1000,1000_QL80_.jpg", author: "Colleen Hoover" },
-        { id: 302, title: "O Poder do Hábito", duration: "8h 15m", img: "https://m.media-amazon.com/images/I/51EqnCqyXvL._AC_UF1000,1000_QL80_.jpg", author: "Charles Duhigg" },
+        { id: 301, title: "Verity", duration: "12h 30m", img: "https://m.media-amazon.com/images/I/917iVfhEhxL._AC_UF1000,1000_QL80_.jpg", author: "Colleen Hoover" },
+        { id: 302, title: "O Poder do Hábito", duration: "8h 15m", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqAcXk_01OW2lp4Vw4oM_4ienUiYhUklwtkw&s", author: "Charles Duhigg" },
         { id: 303, title: "Sapiens", duration: "15h 40m", img: "https://m.media-amazon.com/images/I/713jIoMO3UL._AC_UF1000,1000_QL80_.jpg", author: "Yuval Noah Harari" }
     ]
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    applyGlobalPreferences(); 
     renderHero();
     renderSpotlight();
     renderRanking();
