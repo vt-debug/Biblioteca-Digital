@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Estatísticas | Bibliotheca</title>
+
+    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="../css/stats.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+    <div class="bg-ambient"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="dashboard-container">
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header-mobile"><span class="logo-text">Bibliotheca</span><button
+                    class="close-sidebar-btn"><i class="ph ph-x"></i></button></div>
+            <div class="logo-container desktop-only"><i class="ph-fill ph-books"></i><span
+                    class="logo-text">Bibliotheca</span></div>
+            <nav class="menu">
+                <div class="menu-label">Navegação</div>
+                <a href="home.html" class="menu-item spotlight-item"><i class="ph ph-squares-four"></i><span>Visão
+                        Geral</span></a>
+                <a href="explore.html" class="menu-item spotlight-item"><i class="ph ph-compass"></i><span>Explorar
+                        Acervo</span></a>
+                <a href="lists.html" class="menu-item spotlight-item"><i class="ph ph-bookmark-simple"></i><span>Minhas
+                        Listas</span></a>
+                <div class="menu-label">Comunidade</div>
+                <a href="community.html" class="menu-item spotlight-item"><i class="ph ph-users"></i><span>Clube do
+                        Livro</span></a>
+                <a href="reviews.html" class="menu-item spotlight-item"><i
+                        class="ph ph-star-half"></i><span>Avaliações</span></a>
+                <div class="menu-label">Conta</div>
+                <a href="settings.html" class="menu-item spotlight-item"><i
+                        class="ph ph-gear"></i><span>Configurações</span></a>
+            </nav>
+            <div class="sidebar-footer"><a href="login.html" class="logout-btn spotlight-item"><i
+                        class="ph ph-sign-out"></i> <span>Sair</span></a></div>
+        </aside>
+
+        <main class="main-content stats-content">
+
+            <header class="top-bar" id="topBar">
+                <div class="top-bar-left">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="ph ph-list"></i></button>
+                    <div class="greeting">
+                        <h1>Estatísticas</h1>
+                        <span class="user-name">Sua jornada em números.</span>
+                    </div>
+                </div>
+                <div class="top-actions">
+                    <div class="period-selector glass-panel">
+                        <button class="period-btn active click-shrink" data-period="year">Ano</button>
+                        <button class="period-btn click-shrink" data-period="month">Mês</button>
+                        <button class="period-btn click-shrink" data-period="week">Semana</button>
+                    </div>
+                    <div class="profile-wrapper"><img src="https://i.pravatar.cc/150?img=68"
+                            class="avatar click-shrink"></div>
+                </div>
+            </header>
+
+            <section class="hero-stats animate-enter" style="animation-delay: 0.1s;">
+                <div class="stat-big-card glass-panel spotlight-item">
+                    <div class="stat-icon-bg"><i class="ph-fill ph-books"></i></div>
+                    <div class="stat-value-group">
+                        <h2 id="totalReadCount">0</h2>
+                        <p>Livros Lidos</p>
+                    </div>
+                    <div class="stat-trend positive" id="trendBooks">
+                        <i class="ph-bold ph-trend-up"></i> <span>+12%</span>
+                    </div>
+                    <div class="card-decoration"></div>
+                </div>
+
+                <div class="stat-big-card glass-panel spotlight-item">
+                    <div class="stat-icon-bg" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i
+                            class="ph-fill ph-files"></i></div>
+                    <div class="stat-value-group">
+                        <h2 id="totalPagesCount">0</h2>
+                        <p>Páginas Viradas</p>
+                    </div>
+                    <div class="stat-trend positive">
+                        <i class="ph-bold ph-trend-up"></i> <span>Recorde!</span>
+                    </div>
+                    <div class="card-decoration green"></div>
+                </div>
+
+                <div class="stat-big-card glass-panel spotlight-item">
+                    <div class="stat-icon-bg" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;"><i
+                            class="ph-fill ph-fire"></i></div>
+                    <div class="stat-value-group">
+                        <h2 id="streakCount">12</h2>
+                        <p>Dias Seguidos</p>
+                    </div>
+                    <div class="stat-trend neutral">
+                        <i class="ph-bold ph-minus"></i> <span>Mantendo</span>
+                    </div>
+                    <div class="card-decoration red"></div>
+                </div>
+            </section>
+
+            <div class="stats-grid-split">
+
+                <section class="chart-section glass-panel spotlight-item animate-enter" style="animation-delay: 0.2s;">
+                    <div class="chart-header">
+                        <h3>Leitura <span id="chartPeriodLabel">Mensal</span></h3>
+                        <button class="btn-icon-small"><i class="ph ph-dots-three"></i></button>
+                    </div>
+                    <div class="bar-chart-container" id="barChart">
+                    </div>
+                </section>
+
+                <section class="donut-section glass-panel spotlight-item animate-enter" style="animation-delay: 0.3s;">
+                    <div class="chart-header">
+                        <h3>Gêneros Favoritos</h3>
+                    </div>
+                    <div class="donut-container" id="donutChartContainer">
+                    </div>
+                </section>
+
+            </div>
+
+            <section class="heatmap-section glass-panel spotlight-item animate-enter" style="animation-delay: 0.4s;">
+                <div class="chart-header">
+                    <h3>Consistência Anual</h3>
+                    <div class="heatmap-legend">
+                        <span>Menos</span>
+                        <div class="heat-scale">
+                            <span class="l1"></span><span class="l2"></span><span class="l3"></span><span
+                                class="l4"></span>
+                        </div>
+                        <span>Mais</span>
+                    </div>
+                </div>
+                <div class="heatmap-grid" id="heatmapGrid"></div>
+            </section>
+
+            <section class="achievements-section animate-enter" style="animation-delay: 0.5s;">
+                <h3 class="section-title">Conquistas Desbloqueadas</h3>
+                <div class="badges-grid">
+                    <div class="badge-card glass-panel spotlight-item unlocked click-shrink">
+                        <div class="badge-glow"></div>
+                        <div class="badge-icon"><i class="ph-fill ph-book-bookmark"></i></div>
+                        <div class="badge-info">
+                            <h4>Primeiro Passo</h4>
+                            <p>Leu o primeiro livro</p>
+                        </div>
+                    </div>
+                    <div class="badge-card glass-panel spotlight-item unlocked click-shrink">
+                        <div class="badge-glow red"></div>
+                        <div class="badge-icon" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;"><i
+                                class="ph-fill ph-fire"></i></div>
+                        <div class="badge-info">
+                            <h4>Em Chamas</h4>
+                            <p>Sequência de 7 dias</p>
+                        </div>
+                    </div>
+                    <div class="badge-card glass-panel spotlight-item locked click-shrink">
+                        <div class="badge-icon"><i class="ph-fill ph-lock-key"></i></div>
+                        <div class="badge-info">
+                            <h4>Bibliotecário</h4>
+                            <p>Leia 50 livros</p>
+                        </div>
+                        <div class="badge-progress-bar">
+                            <div class="fill" style="width: 26%"></div>
+                        </div>
+                    </div>
+                    <div class="badge-card glass-panel spotlight-item locked click-shrink">
+                        <div class="badge-icon"><i class="ph-fill ph-lock-key"></i></div>
+                        <div class="badge-info">
+                            <h4>Crítico Literário</h4>
+                            <p>Faça 10 resenhas</p>
+                        </div>
+                        <div class="badge-progress-bar">
+                            <div class="fill" style="width: 50%"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="../script/stats.js"></script>
+</body>
+
+</html>
