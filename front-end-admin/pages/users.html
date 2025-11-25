@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Usuários | Admin Bibliotheca</title>
+
+    <link rel="stylesheet" href="../css/dashboard.css" />
+    <link rel="stylesheet" href="../css/users.css" />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        (function () {
+            const prefersDark = localStorage.getItem('admin_darkmode') === 'true';
+            const cursorOff = localStorage.getItem('admin_cursor') === 'false';
+
+            if (prefersDark) document.documentElement.classList.add('dark-mode');
+            if (cursorOff) document.documentElement.classList.add('no-custom-cursor');
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon-wrapper">
+                    <i class="ph-fill ph-books logo-icon"></i>
+                </div>
+                <div class="logo-info">
+                    <span class="logo-text">Bibliotheca</span>
+                    <span class="badge-admin">Admin</span>
+                </div>
+            </div>
+
+            <nav class="admin-menu">
+                <p class="menu-label">Gestão</p>
+
+                <a href="dashboard.html" class="menu-link">
+                    <i class="ph ph-squares-four"></i>
+                    Dashboard
+                </a>
+
+                <a href="books.html" class="menu-link">
+                    <i class="ph ph-books"></i>
+                    Acervo
+                    <span class="pill-count" data-count="books">0</span>
+                </a>
+
+                <a href="users.html" class="menu-link active">
+                    <i class="ph ph-users"></i>
+                    Usuários
+                    <span class="pill-count" data-count="users">0</span>
+                </a>
+
+                <a href="loans.html" class="menu-link">
+                    <i class="ph ph-arrows-left-right"></i>
+                    Empréstimos
+                    <span class="pill-count" data-count="loans">0</span>
+                </a>
+
+                <p class="menu-label">Sistema</p>
+
+                <a href="settings.html" class="menu-link">
+                    <i class="ph ph-gear"></i>
+                    Configurações
+                </a>
+            </nav>
+
+            <div class="admin-footer">
+                <div class="admin-profile">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="Admin" />
+                    <div class="profile-text">
+                        <strong>Carlos A.</strong>
+                        <span>Gerente</span>
+                    </div>
+                </div>
+                <button class="btn-logout">
+                    <i class="ph ph-sign-out"></i>
+                </button>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+            <header class="admin-header animate-fade-down">
+                <div class="header-title">
+                    <h1>Gerenciar Usuários</h1>
+                    <p>
+                        Total de <strong id="totalUsersCount">0</strong> inscritos.
+                    </p>
+                </div>
+
+                <div class="header-actions">
+                    <button class="action-btn primary" onclick="openUserModal()">
+                        <div class="icon"><i class="ph-bold ph-plus"></i></div>
+                        <span>Adicionar Usuário</span>
+                    </button>
+                </div>
+            </header>
+
+            <section class="inventory-health-grid animate-fade-up">
+                <div class="health-card">
+                    <div class="h-info">
+                        <span>Usuários Ativos</span>
+                        <strong id="metricActiveUsers">0</strong>
+                    </div>
+                    <div class="h-icon ok">
+                        <i class="ph-fill ph-user-circle"></i>
+                    </div>
+                </div>
+
+                <div class="health-card">
+                    <div class="h-info">
+                        <span>Novos no mês</span>
+                        <strong id="metricNewUsers">0</strong>
+                    </div>
+                    <div class="h-icon info">
+                        <i class="ph-fill ph-sparkle"></i>
+                    </div>
+                </div>
+
+                <div class="health-card">
+                    <div class="h-info">
+                        <span>Contas Suspensas</span>
+                        <strong id="metricSuspended">0</strong>
+                    </div>
+                    <div class="h-icon alert">
+                        <i class="ph-fill ph-warning"></i>
+                    </div>
+                </div>
+            </section>
+
+            <section class="filters-bar glass-panel animate-fade-up" style="animation-delay: 0.1s;">
+                <div class="search-group">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input id="userSearchInput" type="text" placeholder="Buscar por nome ou email..." />
+                </div>
+
+                <div class="filter-group">
+                    <select id="roleFilter" class="select-filter">
+                        <option value="all">Todos papéis</option>
+                        <option value="Leitor">Leitor</option>
+                        <option value="Editor">Editor</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+
+                    <select id="statusFilter" class="select-filter">
+                        <option value="all">Todos status</option>
+                        <option value="active">Ativo</option>
+                        <option value="pending">Pendente</option>
+                        <option value="suspended">Suspenso</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="users-table-section glass-panel animate-fade-up" style="animation-delay:.2s;">
+                <div class="table-wrapper">
+                    <table class="admin-table users-table">
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Email</th>
+                                <th>Papel</th>
+                                <th>Status</th>
+                                <th>Desde</th>
+                                <th style="text-align:right;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <div class="modal-overlay" id="userModal" data-modal-overlay>
+            <div class="modal-content modal-large">
+                <div class="modal-header-bg">
+                    <h3 id="userModalTitle">Novo Usuário</h3>
+                    <button class="close-modal-light" onclick="closeUserModal()">
+                        <i class="ph ph-x"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p class="form-feedback" id="userFormFeedback"></p>
+
+                    <form id="userForm">
+                        <div class="form-layout user-form-layout">
+                            <div class="data-section">
+
+                                <div class="form-group">
+                                    <label>Nome Completo</label>
+                                    <input type="text" id="inpUserName" required />
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" id="inpUserEmail" required />
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Papel</label>
+                                        <select id="inpUserRole">
+                                            <option value="Leitor">Leitor</option>
+                                            <option value="Editor">Editor</option>
+                                            <option value="Admin">Admin</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select id="inpUserStatus">
+                                            <option value="active">Ativo</option>
+                                            <option value="pending">Pendente</option>
+                                            <option value="suspended">Suspenso</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Nota Interna</label>
+                                    <textarea id="inpUserNote" rows="3"
+                                        placeholder="Comentários ou observações"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn-cancel" onclick="closeUserModal()">Cancelar</button>
+                            <button type="submit" class="btn-save" id="btnSaveUser">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="deleteUserConfirm" data-modal-overlay>
+            <div class="modal-content modal-confirm">
+                <div class="modal-header-warning">
+                    <h3>
+                        <i class="ph-fill ph-warning-circle"></i>
+                        Excluir Usuário?
+                    </h3>
+                    <button class="close-modal-warning" onclick="closeDeleteUserModal()">
+                        <i class="ph ph-x"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body-confirm">
+                    <p id="deleteUserText">Tem certeza que deseja excluir este usuário?</p>
+
+                    <div class="confirm-actions">
+                        <button class="btn-cancel" onclick="closeDeleteUserModal()">Cancelar</button>
+                        <button class="btn-confirm-delete" onclick="confirmUserDelete()">Sim, excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../script/admin-global.js" defer></script>
+    <script src="../script/sidebar.js" defer></script>
+    <script src="../script/users.js"></script>
+</body>
+
+</html>

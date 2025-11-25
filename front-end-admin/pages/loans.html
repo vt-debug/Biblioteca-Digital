@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empréstimos | Admin Bibliotheca</title>
+
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/loans.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        (function () {
+            const prefersDark = localStorage.getItem('admin_darkmode') === 'true';
+            const cursorOff = localStorage.getItem('admin_cursor') === 'false';
+
+            if (prefersDark) document.documentElement.classList.add('dark-mode');
+            if (cursorOff) document.documentElement.classList.add('no-custom-cursor');
+        })();
+    </script>
+</head>
+
+<body>
+
+    <div class="admin-container">
+
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon-wrapper"><i class="ph-fill ph-books logo-icon"></i></div>
+                <div class="logo-info">
+                    <span class="logo-text">Bibliotheca</span>
+                    <span class="badge-admin">Admin</span>
+                </div>
+            </div>
+
+            <nav class="admin-menu">
+                <p class="menu-label">Gestão</p>
+                <a href="dashboard.html" class="menu-link">
+                    <i class="ph ph-squares-four"></i> Dashboard
+                </a>
+                <a href="books.html" class="menu-link">
+                    <i class="ph ph-books"></i> Acervo
+                    <span class="pill-count" data-count="books">0</span>
+                </a>
+                <a href="users.html" class="menu-link">
+                    <i class="ph ph-users"></i> Usuários
+                    <span class="pill-count" data-count="users">0</span>
+                </a>
+                <a href="loans.html" class="menu-link active">
+                    <i class="ph ph-arrows-left-right"></i> Empréstimos
+                    <span class="pill-count" data-count="loans">0</span>
+                </a>
+
+                <p class="menu-label">Sistema</p>
+                <a href="settings.html" class="menu-link">
+                    <i class="ph ph-gear"></i> Configurações
+                </a>
+            </nav>
+
+            <div class="admin-footer">
+                <div class="admin-profile">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="Admin" data-admin-avatar>
+                    <div class="profile-text">
+                        <strong>Carlos A.</strong>
+                        <span>Gerente</span>
+                    </div>
+                </div>
+                <button class="btn-logout"><i class="ph ph-sign-out"></i></button>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+            <header class="admin-header animate-fade-down">
+                <div class="header-title">
+                    <h1>Gerenciar Empréstimos</h1>
+                    <p>Total de <strong id="totalLoansCount">0</strong> registros.</p>
+                </div>
+
+                <div class="header-actions">
+                    <button class="action-btn primary" onclick="openLoanModal()">
+                        <div class="icon"><i class="ph-bold ph-plus"></i></div>
+                        <span>Novo Empréstimo</span>
+                    </button>
+                </div>
+            </header>
+
+            <section class="inventory-health-grid animate-fade-up">
+                <div class="health-card">
+                    <div class="h-info">
+                        <span>Ativos</span>
+                        <strong id="metricActiveLoans">0</strong>
+                    </div>
+                    <div class="h-icon info"><i class="ph-fill ph-book-open-text"></i></div>
+                </div>
+
+                <div class="health-card">
+                    <div class="h-info">
+                        <span>Atrasados</span>
+                        <strong id="metricLateLoans">0</strong>
+                    </div>
+                    <div class="h-icon alert"><i class="ph-fill ph-warning"></i></div>
+                </div>
+
+                <div class="health-card">
+                    <div class="h-info">
+                        <span>Devolvidos</span>
+                        <strong id="metricReturned">0</strong>
+                    </div>
+                    <div class="h-icon ok"><i class="ph-fill ph-check-circle"></i></div>
+                </div>
+            </section>
+
+            <section class="filters-bar glass-panel animate-fade-up" style="animation-delay: .15s;">
+                <div class="search-group">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" id="loanSearchInput" placeholder="Buscar por livro ou usuário...">
+                </div>
+
+                <div class="filter-group">
+                    <select id="loanStatusFilter" class="select-filter">
+                        <option value="all">Todos status</option>
+                        <option value="active">Ativo</option>
+                        <option value="pending">Pendente</option>
+                        <option value="late">Atrasado</option>
+                        <option value="returned">Devolvido</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="loans-table-section glass-panel animate-fade-up" style="animation-delay: .25s;">
+                <div class="table-wrapper">
+                    <table class="admin-table loans-table">
+                        <thead>
+                            <tr>
+                                <th>Livro / Nota</th>
+                                <th>Usuário</th>
+                                <th>Retirada</th>
+                                <th>Devolução</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loansTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="loans-table-section glass-panel animate-fade-up" style="animation-delay: 0.3s;">
+                <div class="table-wrapper" style="padding: 0 1.5rem 1.5rem;">
+                    <header class="panel-head">
+                        <div>
+                            <p class="label">Histórico</p>
+                            <strong>Atividade Recente</strong>
+                        </div>
+                        <button class="pill ghost" type="button" onclick="clearLoanTimeline()">
+                            <i class="ph ph-trash"></i> Limpar
+                        </button>
+                    </header>
+
+                    <ul class="mini-list" id="loanTimeline"></ul>
+                </div>
+            </section>
+
+        </main>
+
+        <div class="modal-overlay" id="loanModal" data-modal-overlay>
+            <div class="modal-content modal-large">
+                <div class="modal-header-bg">
+                    <h3 id="loanModalTitle">Novo Empréstimo</h3>
+                    <button class="close-modal-light" onclick="closeLoanModal()"><i class="ph ph-x"></i></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-feedback" id="loanFormFeedback"></div>
+
+                    <form id="loanForm">
+                        <div class="loan-form-grid">
+                            <div class="form-group">
+                                <label>Nome do Livro</label>
+                                <input type="text" id="inpLoanBook" placeholder="Digite o título exato..." required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Nome do Usuário</label>
+                                <input type="text" id="inpLoanUser" placeholder="Quem está retirando?" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Data Retirada</label>
+                                    <input type="date" id="inpLoanOut" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Data Devolução</label>
+                                    <input type="date" id="inpLoanReturn" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Status Atual</label>
+                                    <div class="select-wrapper">
+                                        <select id="inpLoanStatus">
+                                            <option value="active">Ativo (Em andamento)</option>
+                                            <option value="pending">Pendente</option>
+                                            <option value="late">Atrasado</option>
+                                            <option value="returned">Devolvido</option>
+                                        </select>
+                                        <i class="ph-bold ph-caret-down select-icon"></i>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Observações</label>
+                                    <input type="text" id="inpLoanNote" placeholder="Ex: Livro com rasura na capa...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn-cancel" onclick="closeLoanModal()">Cancelar</button>
+                            <button type="submit" class="btn-save" id="btnSaveLoan">Salvar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="deleteLoanConfirm" data-modal-overlay>
+            <div class="modal-content modal-danger">
+                <div class="modal-danger-header">
+                    <div class="danger-icon"><i class="ph-fill ph-warning-circle"></i></div>
+                    <h3>Excluir Registro?</h3>
+                    <button class="close-modal-warning" onclick="closeDeleteLoanModal()"><i
+                            class="ph ph-x"></i></button>
+                </div>
+
+                <div class="modal-danger-body">
+                    <p>Você está prestes a apagar este histórico de empréstimo.</p>
+                    <div class="delete-target-box">
+                        <i class="ph ph-arrows-left-right"></i>
+                        <span id="deleteLoanText">Carregando...</span>
+                    </div>
+                    <p style="margin-top:15px; font-size:0.9rem;">O estoque do livro será ajustado automaticamente se
+                        necessário.</p>
+                </div>
+
+                <div class="modal-danger-footer">
+                    <button class="btn-danger-cancel" onclick="closeDeleteLoanModal()">Cancelar</button>
+                    <button class="btn-danger-confirm" onclick="confirmLoanDelete()">Sim, excluir</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../script/admin-global.js" defer></script>
+    <script src="../script/sidebar.js" defer></script>
+    <script src="../script/loans.js"></script>
+</body>
+
+</html>

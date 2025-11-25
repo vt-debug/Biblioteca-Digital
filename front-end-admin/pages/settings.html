@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações | Admin Bibliotheca</title>
+
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/settings.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <script>
+    (function () {
+        const prefersDark = localStorage.getItem('admin_darkmode') === 'true';
+        const cursorOff = localStorage.getItem('admin_cursor') === 'false';
+        
+        if (prefersDark) document.documentElement.classList.add('dark-mode');
+        if (cursorOff) document.documentElement.classList.add('no-custom-cursor');
+    })();
+</script>
+</head>
+
+<body>
+    <div id="adminToast" class="toast-bubble" role="status" aria-live="polite">
+        <i class="ph-fill ph-check-circle"></i> <span></span>
+    </div>
+
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon-wrapper"><i class="ph-fill ph-books logo-icon"></i></div>
+                <div class="logo-info">
+                    <span class="logo-text">Bibliotheca</span>
+                    <span class="badge-admin">Admin</span>
+                </div>
+            </div>
+            <nav class="admin-menu">
+                <p class="menu-label">Gestão</p>
+                <a href="dashboard.html" class="menu-link"><i class="ph ph-squares-four"></i> Dashboard</a>
+                <a href="books.html" class="menu-link"><i class="ph ph-books"></i> Acervo <span class="pill-count" data-count="books">0</span></a>
+                <a href="users.html" class="menu-link"><i class="ph ph-users"></i> Usuários <span class="pill-count" data-count="users">0</span></a>
+                <a href="loans.html" class="menu-link"><i class="ph ph-arrows-left-right"></i> Empréstimos <span class="pill-count" data-count="loans">0</span></a>
+                <p class="menu-label">Sistema</p>
+                <a href="settings.html" class="menu-link active"><i class="ph ph-gear"></i> Configurações</a>
+            </nav>
+            <div class="admin-footer">
+                <div class="admin-profile">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="Admin" data-admin-avatar>
+                    <div class="profile-text"><strong>Carlos A.</strong><span>Gerente</span></div>
+                </div>
+                <button class="btn-logout"><i class="ph ph-sign-out"></i></button>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+            <header class="admin-header animate-fade-down">
+                <div class="header-title">
+                    <h1>Configurações</h1>
+                    <p>Personalize a aparência e os recursos do sistema.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="action-btn primary" id="btnSaveSettings">
+                        <div class="icon"><i class="ph-bold ph-floppy-disk"></i></div>
+                        <span>Salvar Alterações</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="pref-bar animate-fade-up">
+                <div class="pref-pill" id="prefDarkState">
+                    <div class="pill-icon"><i class="ph-bold ph-moon-stars"></i></div>
+                    <div><small>Tema</small><strong>Claro</strong></div>
+                </div>
+                <div class="pref-pill" id="prefCursorState">
+                    <div class="pill-icon"><i class="ph-bold ph-cursor"></i></div>
+                    <div><small>Cursor</small><strong>Ativo</strong></div>
+                </div>
+                <div class="pref-pill" id="prefChatState">
+                    <div class="pill-icon"><i class="ph-bold ph-chats"></i></div>
+                    <div><small>Chat</small><strong>Online</strong></div>
+                </div>
+            </div>
+
+            <section class="settings-grid">
+                <article class="settings-card animate-fade-up">
+                    <header class="card-header">
+                        <p class="label">Visual</p>
+                        <h3>Aparência & Tema</h3>
+                    </header>
+                    
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <strong>Modo Escuro</strong>
+                            <p>Alternar para o tema noturno de alto contraste.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggleDark">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <strong>Cursor Personalizado</strong>
+                            <p>Ativar o cursor fluido do sistema.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="toggleCursor" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </article>
+
+                <article class="settings-card chat-settings animate-fade-up" style="animation-delay:0.1s;">
+                    <header class="card-header">
+                        <div class="header-split">
+                            <div>
+                                <p class="label">Comunicação</p>
+                                <h3>Chat em Tempo Real</h3>
+                            </div>
+                            <span class="status-badge active" id="chatLiveStatus">Online</span>
+                        </div>
+                    </header>
+
+                    <div class="chat-grid-layout">
+                        <div class="chat-controls">
+                            <div class="setting-row compact">
+                                <div class="setting-info">
+                                    <strong>Habilitar Widget</strong>
+                                    <p>Mostrar chat para visitantes.</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="toggleChat" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Status Visível</label>
+                                <div class="select-wrapper">
+                                    <select id="chatStatus">
+                                        <option value="online">🟢 Disponível</option>
+                                        <option value="away">🟡 Ausente</option>
+                                        <option value="offline">🔴 Offline</option>
+                                    </select>
+                                    <i class="ph-bold ph-caret-down select-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Mensagem de Boas-vindas</label>
+                                <textarea id="chatGreeting" rows="3" placeholder="Olá! Como posso ajudar?"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="chat-preview-wrapper">
+                            <div class="chat-preview-glass">
+                                <div class="preview-header">
+                                    <div class="agent-info">
+                                        <div class="agent-avatar"><i class="ph-fill ph-robot"></i></div>
+                                        <div>
+                                            <strong>Assistente</strong>
+                                            <span>Agora mesmo</span>
+                                        </div>
+                                    </div>
+                                    <i class="ph-bold ph-dots-three"></i>
+                                </div>
+                                <div class="preview-body">
+                                    <div class="msg-bubble received" id="chatPreviewMessage">
+                                        Olá! Como posso ajudar?
+                                    </div>
+                                    <div class="msg-bubble sent">
+                                        Gostaria de reservar um livro.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="settings-card animate-fade-up" style="animation-delay:0.2s;">
+                    <header class="card-header">
+                        <p class="label">Sistema</p>
+                        <h3>Dados & Perfil</h3>
+                    </header>
+
+                    <div class="form-group">
+                        <label>URL do Avatar (Admin)</label>
+                        <div class="input-with-preview">
+                            <img id="avatarPreview" src="https://i.pravatar.cc/150?img=11" alt="Avatar">
+                            <input type="text" id="avatarInput" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div class="data-actions">
+                        <div class="setting-info">
+                            <strong>Backup de Dados</strong>
+                            <p>Exporte o banco de dados local (Livros, Usuários, Empréstimos).</p>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn-ghost" id="btnExport"><i class="ph ph-download-simple"></i> Exportar JSON</button>
+                            <label class="btn-ghost file-btn">
+                                <i class="ph ph-upload-simple"></i> Importar
+                                <input type="file" id="fileImport" accept=".json" hidden>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <script src="../script/admin-global.js" defer></script>
+    <script src="../script/sidebar.js" defer></script>
+    <script src="../script/settings.js" defer></script>
+</body>
+</html>

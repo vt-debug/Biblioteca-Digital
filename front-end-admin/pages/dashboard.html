@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Admin Bibliotheca</title>
+
+    <link rel="stylesheet" href="../css/dashboard.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+    (function () {
+        const prefersDark = localStorage.getItem('admin_darkmode') === 'true';
+        const cursorOff = localStorage.getItem('admin_cursor') === 'false';
+        
+        if (prefersDark) document.documentElement.classList.add('dark-mode');
+        if (cursorOff) document.documentElement.classList.add('no-custom-cursor');
+    })();
+</script>
+</head>
+
+<body>
+    <div class="admin-container">
+
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon-wrapper">
+                    <i class="ph-fill ph-books logo-icon"></i>
+                </div>
+                <div class="logo-info">
+                    <span class="logo-text">Bibliotheca</span>
+                    <span class="badge-admin">Admin</span>
+                </div>
+            </div>
+
+            <nav class="admin-menu">
+                <p class="menu-label">Gestão</p>
+                <a href="dashboard.html" class="menu-link active">
+                    <i class="ph ph-squares-four"></i>
+                    Dashboard
+                </a>
+                <a href="books.html" class="menu-link">
+                    <i class="ph ph-books"></i>
+                    Acervo
+                    <span class="pill-count" data-count="books">0</span>
+                </a>
+                <a href="users.html" class="menu-link">
+                    <i class="ph ph-users"></i>
+                    Usuários
+                    <span class="pill-count" data-count="users">0</span>
+                </a>
+                <a href="loans.html" class="menu-link">
+                    <i class="ph ph-arrows-left-right"></i>
+                    Empréstimos
+                    <span class="pill-count" data-count="loans">0</span>
+                </a>
+
+                <p class="menu-label">Sistema</p>
+                <a href="settings.html" class="menu-link">
+                    <i class="ph ph-gear"></i>
+                    Configurações
+                </a>
+            </nav>
+
+            <div class="admin-footer">
+                <div class="admin-profile">
+                    <img src="https://i.pravatar.cc/150?img=11" data-admin-avatar alt="Admin">
+                    <div class="profile-text">
+                        <strong>Carlos A.</strong>
+                        <span>Gerente</span>
+                    </div>
+                </div>
+                <button class="btn-logout" title="Sair">
+                    <i class="ph ph-sign-out"></i>
+                </button>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+
+            <header class="admin-header animate-fade-down">
+                <div class="header-title">
+                    <h1>Visão Geral da Biblioteca</h1>
+                    <p>Resumo atualizado de <span id="currentDate">hoje</span>.</p>
+                </div>
+
+                <div class="header-actions">
+                    <button class="action-btn" title="Ver configurações rápidas">
+                        <i class="ph ph-sliders-horizontal"></i>
+                    </button>
+                    <button class="action-btn primary" onclick="window.location.href='loans.html'">
+                        <div class="icon">
+                            <i class="ph-bold ph-plus"></i>
+                        </div>
+                        <span>Novo Empréstimo</span>
+                    </button>
+                </div>
+            </header>
+
+            <section class="stats-grid animate-fade-up">
+                <article class="card card-glow">
+                    <div class="stat-body">
+                        <span class="label">Livros no acervo</span>
+                        <span class="stat-value" id="metricCatalog">0</span>
+                        <span class="pill muted">
+                            <i class="ph ph-books"></i>
+                            todo o catálogo registrado
+                        </span>
+                    </div>
+                    <div class="icon-sq accent">
+                        <i class="ph ph-books"></i>
+                    </div>
+                </article>
+
+                <article class="card card-glow">
+                    <div class="stat-body">
+                        <span class="label">Usuários cadastrados</span>
+                        <span class="stat-value" id="metricUsers">0</span>
+                        <span class="pill muted">
+                            <i class="ph ph-users"></i>
+                            Comunidade ativa
+                        </span>
+                    </div>
+                    <div class="icon-sq success">
+                        <i class="ph ph-user-focus"></i>
+                    </div>
+                </article>
+
+                <article class="card card-glow">
+                    <div class="stat-body">
+                        <span class="label">Usuários online</span>
+                        <span class="stat-value" id="metricOnline">0</span>
+                        <span class="pill muted">
+                            <i class="ph ph-wifi-high"></i>
+                            sessão ativa no momento
+                        </span>
+                    </div>
+                    <div class="icon-sq info">
+                        <i class="ph ph-broadcast"></i>
+                    </div>
+                </article>
+
+                <article class="card card-glow">
+                    <div class="stat-body">
+                        <span class="label">Empréstimos ativos</span>
+                        <span class="stat-value" id="metricActiveLoans">0</span>
+                        <span class="pill muted">
+                            <i class="ph ph-hourglass-medium"></i>
+                            pendentes: <span id="metricPending">0</span>
+                        </span>
+                    </div>
+                    <div class="icon-sq warning">
+                        <i class="ph ph-arrows-left-right"></i>
+                    </div>
+                </article>
+            </section>
+            <section class="panels animate-fade-up" style="animation-delay:0.05s;">
+                <article class="panel glass-panel panel-flow">
+                    <div class="panel-head">
+                        <strong>Fluxo de empréstimos (semana)</strong>
+                        <div class="legend">
+                            <span><span class="dot primary"></span> Empréstimos</span>
+                            <span><span class="dot neutral"></span> Devoluções</span>
+                        </div>
+                    </div>
+
+                    <div id="weeklyBars" class="chart-bars" aria-label="Gráfico de empréstimos da semana">
+                    </div>
+                </article>
+
+                <article class="panel glass-panel panel-activity">
+                    <div class="panel-head">
+                        <strong>Atividades recentes</strong>
+                        <span class="pill ghost">
+                            <i class="ph ph-lightning"></i>
+                            ao vivo
+                        </span>
+                    </div>
+
+                    <ul id="activityList" class="mini-list">
+                    </ul>
+
+                    <div class="goal">
+                        <div class="goal-head">
+                            <span>Meta de renovação</span>
+                            <span id="goalValue">0%</span>
+                        </div>
+                        <div class="progress">
+                            <div id="goalBar" style="width:0%;"></div>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <section class="loans-table-section glass-panel animate-fade-up" style="animation-delay:0.15s;">
+                <div class="table-header">
+                    <div>
+                        <h2>Empréstimos em destaque</h2>
+                        <p>Ultimos movimentos da semana.</p>
+                    </div>
+                    <button class="action-btn subtle" onclick="window.location.href='loans.html'">
+                        <i class="ph ph-arrow-right"></i>
+                        Ver todos
+                    </button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="admin-table loans-table">
+                        <thead>
+                            <tr>
+                                <th>Livro</th>
+                                <th>Usuário</th>
+                                <th>Retirada</th>
+                                <th>Devolução</th>
+                                <th>Status</th>
+                                <th style="text-align:right;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loansTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="../script/admin-global.js" defer></script>
+    <script src="../script/sidebar.js" defer></script>
+    <script src="../script/dashboard.js" defer></script>
+</body>
+
+</html>

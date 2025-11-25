@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Bibliotheca — Acervo</title>
+
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/books.css">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        (function () {
+            const prefersDark = localStorage.getItem('admin_darkmode') === 'true';
+            const cursorOff = localStorage.getItem('admin_cursor') === 'false';
+
+            if (prefersDark) document.documentElement.classList.add('dark-mode');
+            if (cursorOff) document.documentElement.classList.add('no-custom-cursor');
+        })();
+    </script>
+</head>
+
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon-wrapper"><i class="ph-fill ph-books logo-icon"></i></div>
+                <div class="logo-info">
+                    <span class="logo-text">Bibliotheca</span>
+                    <span class="badge-admin">Admin</span>
+                </div>
+            </div>
+
+            <nav class="admin-menu">
+                <p class="menu-label">Gestão</p>
+                <a href="dashboard.html" class="menu-link">
+                    <i class="ph ph-squares-four"></i> Dashboard
+                </a>
+                <a href="books.html" class="menu-link active">
+                    <i class="ph ph-books"></i> Acervo
+                    <span class="pill-count" data-count="books">0</span>
+                </a>
+                <a href="users.html" class="menu-link">
+                    <i class="ph ph-users"></i> Usuários
+                    <span class="pill-count" data-count="users">0</span>
+                </a>
+                <a href="loans.html" class="menu-link">
+                    <i class="ph ph-arrows-left-right"></i> Empréstimos
+                    <span class="pill-count" data-count="loans">0</span>
+                </a>
+
+                <p class="menu-label">Sistema</p>
+                <a href="settings.html" class="menu-link">
+                    <i class="ph ph-gear"></i> Configurações
+                </a>
+            </nav>
+
+            <div class="admin-footer">
+                <div class="admin-profile">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="Admin" data-admin-avatar>
+                    <div class="profile-text">
+                        <strong>Carlos A.</strong>
+                        <span>Gerente</span>
+                    </div>
+                </div>
+                <button class="btn-logout"><i class="ph ph-sign-out"></i></button>
+            </div>
+        </aside>
+
+        <main class="admin-content">
+            <header class="admin-header animate-fade-down">
+                <div class="header-title">
+                    <h1>Gerenciar Acervo</h1>
+                    <p>Total de <strong id="totalBooksCount">0</strong> títulos catalogados.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="action-btn primary" type="button" onclick="openBookModal()">
+                        <div class="icon"><i class="ph-bold ph-plus"></i></div>
+                        <span>Adicionar Livro</span>
+                    </button>
+                </div>
+            </header>
+
+            <section class="inventory-health-grid animate-fade-up">
+                <div class="health-card">
+                    <div class="h-info">
+                        <span>Itens no acervo</span>
+                        <strong id="metricInventoryValue">0 itens</strong>
+                    </div>
+                    <div class="h-icon ok">
+                        <i class="ph-fill ph-currency-dollar"></i>
+                    </div>
+                </div>
+                <div class="health-card">
+                    <div class="h-info">
+                        <span>Estoque crítico</span>
+                        <strong id="metricLowStock">0 críticos</strong>
+                    </div>
+                    <div class="h-icon alert">
+                        <i class="ph-fill ph-warning"></i>
+                    </div>
+                </div>
+                <div class="health-card">
+                    <div class="h-info">
+                        <span>Esgotados</span>
+                        <strong id="metricBorrowed">+0</strong>
+                    </div>
+                    <div class="h-icon bad">
+                        <i class="ph-fill ph-trend-up"></i>
+                    </div>
+                </div>
+            </section>
+
+            <section class="filters-bar glass-panel animate-fade-up" style="animation-delay: 0.08s;">
+                <div class="search-group">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar por título, autor ou ISBN..."
+                        aria-label="Buscar no acervo">
+                </div>
+                <div class="filter-group">
+                    <select id="categoryFilter" class="select-filter" aria-label="Filtrar por categoria">
+                    </select>
+                    <select id="statusFilter" class="select-filter" aria-label="Filtrar por status">
+                        <option value="all">Todos Status</option>
+                        <option value="available">Disponível</option>
+                        <option value="low">Baixo Estoque</option>
+                        <option value="out">Esgotado</option>
+                    </select>
+                    <button type="button" class="btn-text" id="clearFiltersBtn">
+                        <i class="ph ph-x-circle"></i>
+                        Limpar
+                    </button>
+                </div>
+            </section>
+
+            <section class="books-toolbar animate-fade-up" style="animation-delay: 0.14s;">
+                <div class="toolbar-left">
+                    <span class="toolbar-label">
+                        <i class="ph ph-faders"></i>
+                        Visão do acervo
+                    </span>
+                    <div class="toolbar-metrics">
+                        <span class="metric-pill">
+                            <i class="ph ph-books"></i>
+                            <span id="toolbarTotalTitles">0</span> títulos
+                        </span>
+                        <span class="metric-pill">
+                            <i class="ph ph-warning-circle"></i>
+                            <span id="toolbarLowStock">0</span> em crítico
+                        </span>
+                        <span class="metric-pill">
+                            <i class="ph ph-prohibit"></i>
+                            <span id="toolbarOutOfStock">0</span> esgotados
+                        </span>
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <div class="sort-wrapper">
+                        <label for="sortSelect">Ordenar</label>
+                        <select id="sortSelect" class="select-sort">
+                            <option value="title-asc">Título (A-Z)</option>
+                            <option value="title-desc">Título (Z-A)</option>
+                            <option value="author-asc">Autor (A-Z)</option>
+                            <option value="stock-desc">Estoque (maior)</option>
+                            <option value="stock-asc">Estoque (menor)</option>
+                            <option value="category-asc">Categoria</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-ghost" id="exportCsvBtn">
+                        <i class="ph ph-download-simple"></i>
+                        CSV
+                    </button>
+                    <button type="button" class="btn-ghost icon-only" id="printBtn" title="Imprimir">
+                        <i class="ph ph-printer"></i>
+                    </button>
+                </div>
+            </section>
+
+            <section class="books-table-section glass-panel animate-fade-up" style="animation-delay: 0.2s;">
+                <div class="table-wrapper">
+                    <table class="admin-table books-table">
+                        <thead>
+                            <tr>
+                                <th>Livro</th>
+                                <th>Categoria</th>
+                                <th>ISBN</th>
+                                <th class="th-numeric">Estoque</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booksTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" id="pagination">
+                    <div class="pagination-info" id="paginationInfo">
+                        Mostrando 0–0 de 0
+                    </div>
+                    <div class="page-controls">
+                        <button class="btn-page" id="prevPageBtn" type="button" disabled>
+                            <i class="ph ph-caret-left"></i>
+                        </button>
+                        <span class="page-indicator" id="pageIndicator">Pág. 1 de 1</span>
+                        <button class="btn-page" id="nextPageBtn" type="button" disabled>
+                            <i class="ph ph-caret-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="modal-overlay" id="bookModal" data-modal-overlay>
+            <div class="modal-content modal-large">
+                <div class="modal-header-bg">
+                    <h3 id="modalTitle">Novo Livro</h3>
+                    <button class="close-modal-light" type="button" onclick="closeBookModal()">
+                        <i class="ph ph-x"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-feedback" id="formFeedback"></div>
+
+                    <form id="bookForm" autocomplete="off">
+                        <div class="book-form-grid">
+
+                            <div class="cover-section">
+                                <div class="cover-preview-wrapper" id="coverPreview">
+                                    <div class="empty-cover-state">
+                                        <i class="ph ph-image"></i>
+                                        <span>Capa do Livro</span>
+                                    </div>
+                                    <img src="" class="hidden" alt="Prévia">
+                                </div>
+
+                                <div class="cover-input-group">
+                                    <i class="ph ph-link"></i>
+                                    <input type="text" id="inpCover" placeholder="Cole a URL da imagem aqui...">
+                                </div>
+                                <p class="input-help">Proporção ideal: 2:3 (Vertical)</p>
+                            </div>
+
+                            <div class="data-section">
+                                <div class="form-group full-width">
+                                    <label for="inpTitle">Título da Obra</label>
+                                    <input type="text" id="inpTitle" placeholder="Ex: O Senhor dos Anéis" required>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="inpAuthor">Autor</label>
+                                        <input type="text" id="inpAuthor" placeholder="Nome do autor" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inpCategory">Categoria</label>
+                                        <div class="select-wrapper">
+                                            <select id="inpCategory" required></select>
+                                            <i class="ph-bold ph-caret-down select-icon"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="inpISBN">ISBN</label>
+                                        <input type="text" id="inpISBN" placeholder="000-00-0000-000-0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inpStock">Estoque</label>
+                                        <input type="number" id="inpStock" value="1" min="0">
+                                    </div>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="inpDesc">Sinopse / Notas</label>
+                                    <textarea id="inpDesc" rows="4"
+                                        placeholder="Breve descrição sobre o livro..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn-cancel" onclick="closeBookModal()">Cancelar</button>
+                            <button type="submit" class="btn-save" id="btnSaveBook">Salvar Livro</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="deleteConfirmModal" data-modal-overlay>
+            <div class="modal-content modal-danger">
+                <div class="modal-danger-header">
+                    <div class="danger-icon">
+                        <i class="ph-fill ph-warning-circle"></i>
+                    </div>
+                    <h3>Excluir livro do acervo?</h3>
+                    <button class="close-modal-warning" type="button" onclick="closeDeleteModal()">
+                        <i class="ph ph-x"></i>
+                    </button>
+                </div>
+
+                <div class="modal-danger-body">
+                    <p>Você está prestes a excluir o livro:</p>
+                    <div class="delete-target-box">
+                        <i class="ph ph-book"></i>
+                        <div id="deleteBookName">Carregando...</div>
+                    </div>
+                    <p style="margin-top: 14px;">
+                        Esta ação é permanente e <strong>não pode ser desfeita.</strong>
+                    </p>
+                </div>
+
+                <div class="modal-danger-footer">
+                    <button class="btn-danger-cancel" type="button" onclick="closeDeleteModal()">
+                        Cancelar
+                    </button>
+                    <button class="btn-danger-confirm" type="button" onclick="confirmDelete()">
+                        Sim, excluir definitivamente
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../script/admin-global.js" defer></script>
+    <script src="../script/sidebar.js" defer></script>
+    <script src="../script/books.js"></script>
+</body>
+
+</html>
