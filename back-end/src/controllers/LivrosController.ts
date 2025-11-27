@@ -15,14 +15,15 @@ export const listarLivros = async (req: Request, res: Response) => {
 
 export const inserirLivro = async (req: Request, res: Response) => {
     try {
-        const { titulo, autor, categoria, isbn, estoque, observacao } = req.body;
+        const { titulo, autor, categoria, isbn, estoque, observacao, capa } = req.body;
         const { data, error } = await supabase.from("livros").insert({
             titulo,
             autor,
             categoria,
             isbn,
             estoque,
-            observacao
+            observacao,
+            capa
         });
         if (error) {
             return res.status(500).json({ error: error.message });
@@ -36,14 +37,15 @@ export const inserirLivro = async (req: Request, res: Response) => {
 export const atualizarLivro = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { titulo, autor, categoria, isbn, estoque, observacao } = req.body;
+        const { titulo, autor, categoria, isbn, estoque, observacao, capa } = req.body;
         const { data, error } = await supabase.from("livros").update({
             titulo,
             autor,
             categoria,
             isbn,
             estoque,
-            observacao
+            observacao,
+            capa
         }).eq("id", id);
         if (error) {
             return res.status(500).json({ error: error.message });
