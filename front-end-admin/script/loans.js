@@ -16,6 +16,7 @@ async function fetchLoans() {
     loansData = json || [];
     renderTable();
     updateMetrics();
+    updateLoanTimeline(); 
   } catch (err) {
     console.error("Erro ao carregar empréstimos:", err);
   }
@@ -166,6 +167,7 @@ async function handleFormSubmit(e) {
     }
 
     await fetchLoans();  // Atualiza todos os empréstimos
+    updateLoanTimeline();
     closeModal(modal);
   } catch (err) {
     feedback.textContent = "Erro ao salvar empréstimo.";
@@ -254,3 +256,129 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchLoans();
   setupListeners();
 });
+
+
+// ===================== Atividades Recentes Detalhadas =====================
+const loanHistory = []; // Histórico global de ações
+
+// Função de log detalhado
+function logLoanAction(oldData, newData, acao) {
+  let detalhes = '';
+
+  if (acao === 'updated' && oldData && newData) {
+    const changes = [];
+    if (oldData.livro !== newData.livro) changes.push(`livro: "${oldData.livro}" → "${newData.livro}"`);
+    if (oldData.usuario !== newData.usuario) changes.push(`cliente: "${oldData.usuario}" → "${newData.usuario}"`);
+    if (oldData.status !== newData.status) changes.push(`status: "${getStatusLabel(oldData.status)}" → "${getStatusLabel(newData.status)}"`);
+    if (oldData.data_retirada !== newData.data_retirada) changes.push(`retirada: "${formatDateBr(oldData.data_retirada)}" → "${formatDateBr(newData.data_retirada)}"`);
+    if (oldData.data_devolucao !== newData.data_devolucao) changes.push(`devolução: "${formatDateBr(oldData.data_devolucao)}" → "${formatDateBr(newData.data_devolucao)}"`);
+    if (oldData.observacao !== newData.observacao) changes.push(`observação: "${oldData.observacao || '—'}" → "${newData.observacao || '—'}"`);
+
+    detalhes = changes.join(', ');
+  }
+
+  loanHistory.unshift({
+    usuario: newData.usuario,
+    livro: newData.livro,
+    acao,
+    detalhes,
+    data_retirada: new Date()
+  });
+
+  updateLoanTimeline();
+}
+
+// ===================== Interceptação Automática =====================
+const originalCreateLoan = createLoan;
+createLoan = async function(data) {
+  const res = await originalCreateLoan(data);
+  if (res) logLoanAction(null, data, 'created');
+  return res;
+};
+
+const originalUpdateLoan = updateLoan;
+updateLoan = async function(id, data) {
+  const oldLoan = loansData.find(l => l.id === id);
+  const res = await originalUpdateLoan(id, data);
+  if (res) logLoanAction(oldLoan, data, 'updated');
+  return res;
+};
+
+const originalDeleteLoan = deleteLoan;
+deleteLoan = async function(id) {
+  const loan = loansData.find(l => l.id === id);
+  const res = await originalDeleteLoan(id);
+  if (loan) logLoanAction(loan, loan, 'deleted');
+  return res;
+};
+
+// ===================== Limpar atividades recentes =====================
+function clearLoanTimeline() {
+  loanHistory.length = 0; // Limpa o histórico
+  updateLoanTimeline();   // Atualiza timeline vazia
+}
+
+// ===================== Timeline estilizada com ícones modernos =====================
+function updateLoanTimeline() {
+  const timeline = document.getElementById('loanTimeline');
+  timeline.innerHTML = '';
+
+  loanHistory.slice(0, 5).forEach(loan => {
+    const li = document.createElement('li');
+    li.style.padding = '12px 16px';
+    li.style.marginBottom = '10px';
+    li.style.borderRadius = '8px';
+    li.style.display = 'flex';
+    li.style.alignItems = 'center';
+    li.style.fontFamily = 'Arial, sans-serif';
+    li.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
+    li.style.transition = 'all 0.3s ease';
+
+    let actionText = '';
+    let icon = '';
+    let bgColor = '';
+
+    switch (loan.acao) {
+      case 'created':
+        actionText = `O cliente <strong>${loan.usuario}</strong> pegou o livro <em>${loan.livro}</em>`;
+        icon = '📖'; // ícone moderno
+        bgColor = '#e0f7fa';
+        break;
+      case 'returned':
+        actionText = `O cliente <strong>${loan.usuario}</strong> devolveu o livro <em>${loan.livro}</em>`;
+        icon = '📬';
+        bgColor = '#e8f5e9';
+        break;
+      case 'deleted':
+        actionText = `O empréstimo do cliente <strong>${loan.usuario}</strong> para o livro <em>${loan.livro}</em> foi excluído`;
+        icon = '🗑️';
+        bgColor = '#ffebee';
+        break;
+      case 'updated':
+        actionText = `O empréstimo do cliente <strong>${loan.usuario}</strong> foi atualizado` 
+                     + (loan.detalhes ? `: ${loan.detalhes}` : '');
+        icon = '📝';
+        bgColor = '#fff3e0';
+        break;
+      default:
+        actionText = `Houve uma ação no empréstimo do cliente <strong>${loan.usuario}</strong> para o livro <em>${loan.livro}</em>`;
+        icon = 'ℹ️';
+        bgColor = '#f5f5f5';
+    }
+
+    li.style.backgroundColor = bgColor;
+    li.innerHTML = `
+      <span style="margin-right:12px; font-size:20px;">${icon}</span>
+      <div>
+        ${actionText} <br>
+        <small style="color:#555;">${formatDateBr(loan.data_retirada)}</small>
+      </div>
+    `;
+
+    timeline.appendChild(li);
+  });
+}
+
+
+
+
