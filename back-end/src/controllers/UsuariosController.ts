@@ -1,59 +1,78 @@
-// usuarios.controller.ts
 import { Request, Response } from "express";
 import supabase from "../supabase";
-import { Usuarios } from "../models/UsuariosModel";
 
-// Listar todos os usuários
+// ---------------- LISTAR USUÁRIOS ----------------
 export const listarUsuarios = async (req: Request, res: Response) => {
-    const { data, error } = await supabase.from("usuarios").select("*");
-    if (error) return res.status(500).json({ error: error.message });
-    return res.status(200).json(data as Usuarios[]);
+    try {
+        const { data, error } = await supabase.from("usuarios").select("*");
+        if (error) throw error;
+        return res.status(200).json(data);
+    } catch (err) {
+        console.log("Erro listarUsuarios:", err);
+        return res.status(500).json({ error: String(err) });
+    }
 };
 
-// Inserir um novo usuário
+// ---------------- CRIAR USUÁRIO ----------------
 export const inserirUsuario = async (req: Request, res: Response) => {
-    const { nome, email, papel, status, observacao } = req.body;
+    try {
+        const { nome, email, papel, status, observacao } = req.body;
 
-    // Validação mínima de tipos
-    if (!['leitor', 'editor', 'admin'].includes(papel)) {
-        return res.status(400).json({ error: "Papel inválido" });
-    }
-    if (!['ativo', 'inativo'].includes(status)) {
-        return res.status(400).json({ error: "Status inválido" });
-    }
+        if (!nome || !email || !papel || !status)
+            return res.status(400).json({ error: "Campos obrigatórios faltando" });
 
-    const { data, error } = await supabase.from("usuarios").insert([
-        { nome, email, papel, status, observacao }
-    ]);
-    if (error) return res.status(500).json({ error: error.message });
-    return res.status(201).json(data as Usuarios[] | null);
+        const papelLower = papel.toLowerCase();
+        const statusLower = status.toLowerCase();
+
+        if (!["leitor", "editor", "admin"].includes(papelLower))
+            return res.status(400).json({ error: "Papel inválido" });
+        if (!["active", "pending", "suspended"].includes(statusLower))
+            return res.status(400).json({ error: "Status inválido" });
+
+        const { data, error } = await supabase.from("usuarios")
+            .insert([{ nome, email, papel: papelLower, status: statusLower, observacao }])
+            .select(); // retorna o registro criado
+
+        if (error) throw error;
+
+        return res.status(201).json(data);
+    } catch (err) {
+        console.log("Erro inserirUsuario:", err);
+        return res.status(500).json({ error: String(err) });
+    }
 };
 
-// Atualizar usuário existente
+// ---------------- ATUALIZAR USUÁRIO ----------------
 export const atualizarUsuario = async (req: Request, res: Response) => {
-    const { nome, email, papel, status, observacao } = req.body;
+    try {
+        const { nome, email, papel, status, observacao } = req.body;
+        const { id } = req.params;
 
-    if (!['leitor', 'editor', 'admin'].includes(papel)) {
-        return res.status(400).json({ error: "Papel inválido" });
+        const papelLower = papel?.toLowerCase();
+        const statusLower = status?.toLowerCase();
+
+        const { data, error } = await supabase.from("usuarios")
+            .update({ nome, email, papel: papelLower, status: statusLower, observacao })
+            .eq("id", id)
+            .select();
+
+        if (error) throw error;
+        return res.status(200).json(data);
+    } catch (err) {
+        console.log("Erro atualizarUsuario:", err);
+        return res.status(500).json({ error: String(err) });
     }
-    if (!['ativo', 'inativo'].includes(status)) {
-        return res.status(400).json({ error: "Status inválido" });
-    }
-
-    const { data, error } = await supabase.from("usuarios")
-        .update({ nome, email, papel, status, observacao })
-        .eq("id", req.params.id);
-
-    if (error) return res.status(500).json({ error: error.message });
-    return res.status(200).json(data as Usuarios[] | null);
 };
 
-// Excluir usuário
+// ---------------- EXCLUIR USUÁRIO ----------------
 export const excluirUsuario = async (req: Request, res: Response) => {
-    const { data, error } = await supabase.from("usuarios")
-        .delete()
-        .eq("id", req.params.id);
-
-    if (error) return res.status(500).json({ error: error.message });
-    return res.status(200).json(data as Usuarios[] | null);
+    try {
+        const { id } = req.params;
+        const { data, error } = await supabase.from("usuarios").delete().eq("id", id);
+        if (error) throw error;
+        return res.status(200).json({ message: "Usuário excluído", data });
+    } catch (err) {
+        console.log("Erro excluirUsuario:", err);
+        return res.status(500).json({ error: String(err) });
+    }
 };

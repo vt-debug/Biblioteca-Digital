@@ -9,8 +9,6 @@ app.use(cors({
     origin: "*"
 }));
 
-
 app.use("/usuarios", UsuariosRoutes);
-
 
 export default app;

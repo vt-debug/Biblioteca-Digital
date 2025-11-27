@@ -1,15 +1,25 @@
-import { Router } from 'express'
-import { listarUsuarios } from '../controllers/UsuariosController'
-import { atualizarUsuario } from '../controllers/UsuariosController'
-import { inserirUsuario } from '../controllers/UsuariosController'
-import { excluirUsuario } from '../controllers/UsuariosController'
+import { Router } from "express";
+import { 
+    listarUsuarios, 
+    inserirUsuario, 
+    atualizarUsuario, 
+    excluirUsuario 
+} from "../controllers/UsuariosController";
 
-const router = Router()
+const router = Router();
 
-router.get('/', listarUsuarios)
-router.post('/', inserirUsuario)
-router.put('/', atualizarUsuario)
-router.delete('/', excluirUsuario)
+// ---------------------- ROTAS ----------------------
 
-export default router
+// Listar todos os usuários
+router.get("/", listarUsuarios);
 
+// Inserir um novo usuário
+router.post("/", inserirUsuario);
+
+// Atualizar usuário existente (recebe ID na URL)
+router.put("/:id", atualizarUsuario);
+
+// Excluir usuário (recebe ID na URL)
+router.delete("/:id", excluirUsuario);
+
+export default router;
