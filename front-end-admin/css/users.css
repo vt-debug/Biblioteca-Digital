@@ -614,6 +614,200 @@
     }
 }
 
+.users-table-section {}
+
+.close-modal-light {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.close-modal-light:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.modal-footer {
+    padding: 1.2rem 2rem;
+    background: rgba(0, 0, 0, 0.02);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #4a3b32;
+    font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #dcdcdc;
+    border-radius: 10px;
+    padding: 12px 15px;
+    font-size: 0.95rem;
+    color: #333;
+    transition: 0.25s;
+    outline: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--secondary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(139, 94, 60, 0.15);
+}
+
+.btn-cancel {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #666;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-cancel:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.btn-save {
+    padding: 10px 24px;
+    border-radius: 10px;
+    border: none;
+    background: var(--secondary);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(62, 43, 38, 0.3);
+    transition: 0.2s;
+}
+
+.btn-save:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+.modal-confirm {
+    max-width: 400px;
+    text-align: center;
+}
+
+.modal-header-warning {
+    background: #FFF4F4;
+    padding: 1.5rem;
+    border-bottom: 1px solid #FFE0E0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header-warning h3 {
+    color: #D32F2F;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-modal-warning {
+    background: transparent;
+    border: none;
+    color: #D32F2F;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.modal-body-confirm {
+    padding: 2rem;
+}
+
+.confirm-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-confirm-delete {
+    background: #D32F2F;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-confirm-delete:hover {
+    background: #B71C1C;
+}
+
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float-up {
+    from {
+        opacity: 0;
+        transform: translateY(22px) scale(.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+@media (max-width: 900px) {
+    .inventory-health-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-container {
+        padding: 18px;
+        padding-left: 18px;
+    }
+
+    .users-table-section {
+        padding: 0.4rem;
+    }
+}
+
 .users-table-section {
     border-radius: 18px;
     background: rgba(255, 255, 255, .96);
@@ -625,4 +819,198 @@
     height: 42px;
     border-radius: 50%;
     object-fit: cover;
+}
+
+html.dark-mode .health-card {
+    background: rgba(40, 30, 22, 0.8) !important;
+    border-color: rgba(255, 230, 210, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+html.dark-mode .health-card:hover {
+    background: rgba(45, 35, 26, 0.95) !important;
+    border-color: rgba(217, 166, 106, 0.4);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+}
+
+html.dark-mode .h-info strong {
+    color: var(--text-main);
+}
+
+html.dark-mode .filters-bar {
+    background: rgba(30, 22, 16, 0.9);
+    border-color: rgba(255, 230, 210, 0.15);
+}
+
+html.dark-mode .search-group {
+    background: rgba(15, 10, 8, 0.7) !important;
+    border-color: rgba(255, 230, 210, 0.2);
+    box-shadow: none;
+}
+
+html.dark-mode .search-group:focus-within {
+    background: rgba(20, 15, 12, 0.9) !important;
+    border-color: var(--primary);
+    box-shadow: 0 4px 18px rgba(217, 166, 106, 0.25);
+}
+
+html.dark-mode .search-group input {
+    color: var(--text-main);
+}
+
+html.dark-mode .select-filter {
+    background: rgba(30, 22, 16, 0.9) !important;
+    border-color: rgba(255, 230, 210, 0.2);
+    color: var(--text-main);
+}
+
+html.dark-mode .select-filter:hover {
+    background: rgba(40, 30, 22, 1) !important;
+}
+
+html.dark-mode .users-table-section {
+    background: rgba(30, 22, 16, 0.9) !important;
+    border-color: rgba(255, 230, 210, 0.15);
+}
+
+html.dark-mode .users-table thead th {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-bottom-color: rgba(255, 230, 210, 0.15);
+}
+
+html.dark-mode .users-table tbody tr:hover {
+    background: rgba(217, 166, 106, 0.12) !important;
+}
+
+html.dark-mode .users-table tbody td {
+    color: var(--text-main);
+    border-bottom-color: rgba(255, 230, 210, 0.1);
+}
+
+html.dark-mode .user-name {
+    color: var(--text-main);
+}
+
+html.dark-mode .avatar-sm {
+    border-color: rgba(255, 230, 210, 0.3);
+}
+
+html.dark-mode .status-badge.active {
+    background: rgba(16, 185, 129, 0.25);
+    color: #6ee7b7;
+}
+
+html.dark-mode .status-badge.pending {
+    background: rgba(245, 158, 11, 0.25);
+    color: #fcd34d;
+}
+
+html.dark-mode .status-badge.suspended {
+    background: rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+}
+
+html.dark-mode .btn-action {
+    background: rgba(30, 22, 16, 0.9) !important;
+    border-color: rgba(255, 230, 210, 0.2);
+}
+
+html.dark-mode .btn-action:hover {
+    background: rgba(40, 30, 22, 1) !important;
+}
+
+html.dark-mode .btn-action.edit:hover {
+    background: rgba(59, 130, 246, 0.25) !important;
+    color: #93c5fd;
+    border-color: #3b82f6;
+}
+
+html.dark-mode .btn-action.delete:hover {
+    background: rgba(239, 68, 68, 0.25) !important;
+    color: #fca5a5;
+    border-color: #ef4444;
+}
+
+html.dark-mode .modal-overlay {
+    background: rgba(5, 4, 2, 0.9);
+}
+
+html.dark-mode .modal-content {
+    background: rgba(25, 18, 13, 0.98) !important;
+    border-color: rgba(255, 230, 210, 0.2);
+}
+
+html.dark-mode .modal-body {
+    background: rgba(25, 18, 13, 0.98);
+}
+
+html.dark-mode .modal-footer {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-top-color: rgba(255, 230, 210, 0.15);
+}
+
+html.dark-mode .form-group label {
+    color: var(--text-muted);
+}
+
+html.dark-mode .form-group input,
+html.dark-mode .form-group select,
+html.dark-mode .form-group textarea {
+    background: rgba(15, 10, 8, 0.7) !important;
+    border-color: rgba(255, 230, 210, 0.25);
+    color: var(--text-main);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+html.dark-mode .form-group input:focus,
+html.dark-mode .form-group select:focus,
+html.dark-mode .form-group textarea:focus {
+    background: rgba(20, 15, 12, 0.9) !important;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(217, 166, 106, 0.25);
+}
+
+html.dark-mode .btn-cancel {
+    background: rgba(30, 22, 16, 0.9) !important;
+    border-color: rgba(255, 230, 210, 0.25);
+    color: var(--text-main);
+}
+
+html.dark-mode .btn-cancel:hover {
+    background: rgba(40, 30, 22, 1) !important;
+    color: var(--text-main);
+}
+
+html.dark-mode .btn-save {
+    background: var(--primary) !important;
+    box-shadow: 0 10px 20px rgba(217, 166, 106, 0.3);
+}
+
+html.dark-mode .btn-save:hover {
+    background: var(--primary-600) !important;
+}
+
+html.dark-mode .modal-header-warning {
+    background: rgba(185, 28, 28, 0.25) !important;
+    border-bottom-color: rgba(239, 68, 68, 0.3);
+}
+
+html.dark-mode .modal-header-warning h3 {
+    color: #fca5a5;
+}
+
+html.dark-mode .close-modal-warning {
+    color: #fca5a5;
+}
+
+html.dark-mode .btn-confirm-delete {
+    background: var(--color-danger) !important;
+}
+
+html.dark-mode .btn-confirm-delete:hover {
+    background: #dc2626 !important;
+}
+
+html.dark-mode .empty-state {
+    color: var(--text-muted);
 }

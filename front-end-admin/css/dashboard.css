@@ -1,4 +1,3 @@
-
 :root {
     --bg-body: #f4f1ea;
     --bg-sidebar: #1a120b;
@@ -142,9 +141,20 @@ html.no-custom-cursor .cursor-outline {
 }
 
 @keyframes cursorPulse {
-    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.45; }
-    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.75; }
-    100% { transform: translate(-50%, -50%) scale(1); opacity: 0.45; }
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.45;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 0.75;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.45;
+    }
 }
 
 
@@ -172,7 +182,7 @@ html.dark-mode .admin-container {
 .admin-sidebar {
     width: 260px;
     background: radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.08), transparent 50%),
-                linear-gradient(180deg, var(--bg-sidebar), #130a07);
+        linear-gradient(180deg, var(--bg-sidebar), #130a07);
     color: #fff;
     padding: 18px;
     display: flex;
@@ -407,7 +417,7 @@ html.dark-mode .admin-container {
 
 .action-btn.primary {
     background: radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.24), transparent 55%),
-                linear-gradient(110deg, var(--secondary), #2b1a14);
+        linear-gradient(110deg, var(--secondary), #2b1a14);
     color: #fff;
     border-color: transparent;
     box-shadow: 0 18px 40px rgba(43, 26, 20, 0.5);
@@ -448,9 +458,9 @@ html.dark-mode .admin-container {
     gap: 14px;
     align-items: center;
     transition: transform .3s var(--easing),
-                box-shadow .3s var(--easing),
-                border-color .28s var(--easing),
-                background 0.3s var(--easing);
+        box-shadow .3s var(--easing),
+        border-color .28s var(--easing),
+        background 0.3s var(--easing);
     position: relative;
     overflow: hidden;
 }
@@ -565,8 +575,8 @@ html.dark-mode .admin-container {
     border: 1px solid var(--border-light);
     box-shadow: var(--shadow-sm);
     transition: transform .28s var(--easing),
-                box-shadow .3s var(--easing),
-                border-color .28s var(--easing);
+        box-shadow .3s var(--easing),
+        border-color .28s var(--easing);
     position: relative;
     overflow: hidden;
 }
@@ -622,8 +632,13 @@ html.dark-mode .admin-container {
     display: inline-block;
 }
 
-.legend .dot.primary { background: var(--primary); }
-.legend .dot.neutral { background: rgba(67, 44, 34, 0.3); }
+.legend .dot.primary {
+    background: var(--primary);
+}
+
+.legend .dot.neutral {
+    background: rgba(67, 44, 34, 0.3);
+}
 
 .pill.ghost {
     background: rgba(67, 44, 34, 0.06);
@@ -672,8 +687,13 @@ html.dark-mode .admin-container {
     box-shadow: 0 8px 16px rgba(67, 44, 34, 0.25);
 }
 
-.bar.loans { background: linear-gradient(180deg, var(--primary), var(--primary-600)); }
-.bar.returns { background: rgba(67, 44, 34, 0.26); }
+.bar.loans {
+    background: linear-gradient(180deg, var(--primary), var(--primary-600));
+}
+
+.bar.returns {
+    background: rgba(67, 44, 34, 0.26);
+}
 
 .bar-col:hover .bar {
     transform: translateY(-4px) scale(1.03);
@@ -704,8 +724,8 @@ html.dark-mode .admin-container {
     border: 1px solid var(--border-light);
     background: rgba(255, 255, 255, 0.96);
     transition: transform .2s var(--easing),
-                box-shadow .24s var(--easing),
-                border-color .2s;
+        box-shadow .24s var(--easing),
+        border-color .2s;
 }
 
 .mini-item .dot {
@@ -714,9 +734,17 @@ html.dark-mode .admin-container {
     border-radius: 999px;
 }
 
-.mini-item .dot.success { background: var(--color-success); }
-.mini-item .dot.warning { background: var(--color-warning); }
-.mini-item .dot.info { background: var(--color-info); }
+.mini-item .dot.success {
+    background: var(--color-success);
+}
+
+.mini-item .dot.warning {
+    background: var(--color-warning);
+}
+
+.mini-item .dot.info {
+    background: var(--color-info);
+}
 
 .mini-item strong {
     display: block;
@@ -920,9 +948,20 @@ html.dark-mode .admin-container {
     opacity: 0.8;
 }
 
-.status-badge.active { background: var(--color-success-bg); color: var(--color-success-text); }
-.status-badge.pending { background: var(--color-warning-bg); color: var(--color-warning-text); }
-.status-badge.late { background: var(--color-danger-bg); color: var(--color-danger-text); }
+.status-badge.active {
+    background: var(--color-success-bg);
+    color: var(--color-success-text);
+}
+
+.status-badge.pending {
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
+}
+
+.status-badge.late {
+    background: var(--color-danger-bg);
+    color: var(--color-danger-text);
+}
 
 /* Ações */
 .actions-cell {
@@ -947,7 +986,7 @@ html.dark-mode .admin-container {
 
 html.dark-mode .admin-sidebar {
     background: radial-gradient(circle at 0 0, rgba(214, 161, 94, 0.25), transparent 50%),
-                linear-gradient(180deg, rgba(10, 5, 2, 0.97), rgba(17, 10, 6, 0.96));
+        linear-gradient(180deg, rgba(10, 5, 2, 0.97), rgba(17, 10, 6, 0.96));
 }
 
 html.dark-mode .admin-sidebar::after {
@@ -1020,30 +1059,65 @@ html.dark-mode .btn-logout:hover {
 }
 
 @keyframes bg-shift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 @keyframes gradient-wave {
-    0% { background-position: 0% 0%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 0%; }
+    0% {
+        background-position: 0% 0%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 0%;
+    }
 }
 
 @keyframes fade-up {
-    from { opacity: 0; transform: translateY(18px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes fade-down {
-    from { opacity: 0; transform: translateY(-14px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 @media (max-width: 1180px) {
