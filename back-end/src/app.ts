@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import UsuariosRoutes from "./routes/UsuariosRoutes";
 
 const app = express();
 
@@ -8,9 +9,6 @@ app.use(cors({
     origin: "*"
 }));
 
-// Listando as APIs
-app.get("/", (req, res) => {
-    res.send("API Rodando");
-});
+app.use("/usuarios", UsuariosRoutes);
 
 export default app;
