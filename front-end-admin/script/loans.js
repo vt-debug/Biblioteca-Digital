@@ -258,8 +258,23 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// ===================== Atividades Recentes Detalhadas =====================
-const loanHistory = []; // Histórico global de ações
+// ===================== Atividades Recentes com LocalStorage =====================
+const loanHistoryKey = 'loanHistory'; // chave no localStorage
+const loanHistory = [];
+
+// Carrega histórico do localStorage ao iniciar
+function loadLoanHistory() {
+  const stored = localStorage.getItem(loanHistoryKey);
+  if (stored) {
+    loanHistory.push(...JSON.parse(stored));
+    updateLoanTimeline();
+  }
+}
+
+// Salva histórico no localStorage
+function saveLoanHistory() {
+  localStorage.setItem(loanHistoryKey, JSON.stringify(loanHistory));
+}
 
 // Função de log detalhado
 function logLoanAction(oldData, newData, acao) {
@@ -273,7 +288,6 @@ function logLoanAction(oldData, newData, acao) {
     if (oldData.data_retirada !== newData.data_retirada) changes.push(`retirada: "${formatDateBr(oldData.data_retirada)}" → "${formatDateBr(newData.data_retirada)}"`);
     if (oldData.data_devolucao !== newData.data_devolucao) changes.push(`devolução: "${formatDateBr(oldData.data_devolucao)}" → "${formatDateBr(newData.data_devolucao)}"`);
     if (oldData.observacao !== newData.observacao) changes.push(`observação: "${oldData.observacao || '—'}" → "${newData.observacao || '—'}"`);
-
     detalhes = changes.join(', ');
   }
 
@@ -285,10 +299,11 @@ function logLoanAction(oldData, newData, acao) {
     data_retirada: new Date()
   });
 
+  saveLoanHistory(); // salva no localStorage
   updateLoanTimeline();
 }
 
-// ===================== Interceptação Automática =====================
+// Interceptação automática
 const originalCreateLoan = createLoan;
 createLoan = async function(data) {
   const res = await originalCreateLoan(data);
@@ -312,13 +327,14 @@ deleteLoan = async function(id) {
   return res;
 };
 
-// ===================== Limpar atividades recentes =====================
+// Função para limpar atividades recentes
 function clearLoanTimeline() {
-  loanHistory.length = 0; // Limpa o histórico
-  updateLoanTimeline();   // Atualiza timeline vazia
+  loanHistory.length = 0;
+  saveLoanHistory();
+  updateLoanTimeline();
 }
 
-// ===================== Timeline estilizada com ícones modernos =====================
+// Timeline estilizada com ícones modernos
 function updateLoanTimeline() {
   const timeline = document.getElementById('loanTimeline');
   timeline.innerHTML = '';
@@ -341,7 +357,7 @@ function updateLoanTimeline() {
     switch (loan.acao) {
       case 'created':
         actionText = `O cliente <strong>${loan.usuario}</strong> pegou o livro <em>${loan.livro}</em>`;
-        icon = '📖'; // ícone moderno
+        icon = '📖';
         bgColor = '#e0f7fa';
         break;
       case 'returned':
@@ -378,6 +394,12 @@ function updateLoanTimeline() {
     timeline.appendChild(li);
   });
 }
+
+// Chamar ao carregar a página para carregar histórico
+document.addEventListener('DOMContentLoaded', () => {
+  loadLoanHistory();
+});
+
 
 
 
