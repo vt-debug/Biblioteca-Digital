@@ -492,8 +492,16 @@ function clearFeedback(){ feedback && (feedback.textContent='');}
 
 // ==================== API CRUD ====================
 
-async function createBook(book){ const res=await fetch(API_BASE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(book)}); return res.json(); }
-async function updateBook(book){ const res=await fetch(`${API_BASE}/${book.id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(book)}); return res.json(); }
+// ==================== API CRUD ====================
+
+async function createBook(book){ 
+    const res=await fetch(API_BASE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(book)}); 
+    return res.json(); 
+}
+async function updateBook(book){ 
+    const res=await fetch(`${API_BASE}/${book.id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(book)}); 
+    return res.json(); 
+}
 async function deleteBookById(id){ await fetch(`${API_BASE}/${id}`,{method:'DELETE'}); }
 
 // ==================== EXPORT CSV ====================
