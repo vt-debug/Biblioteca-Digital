@@ -1,14 +1,4 @@
-const LOANS_KEY = 'bibliotheca_loans_db';
-const TIMELINE_KEY = 'bibliotheca_loans_timeline';
-
-const initialLoans = [
-  { id: 1, book: "Duna", user: "Ana Clara", out: "2025-02-01", ret: "2025-02-08", status: "active", note: "" },
-  { id: 2, book: "1984", user: "Lucas Prado", out: "2025-01-28", ret: "2025-02-04", status: "late", note: "" },
-  { id: 3, book: "O Hobbit", user: "Sofia M.", out: "2025-02-10", ret: "2025-02-17", status: "pending", note: "" }
-];
-
 let loansData = [];
-let timelineData = [];
 let editId = null;
 let deleteId = null;
 
@@ -16,32 +6,56 @@ const modal = document.getElementById('loanModal');
 const deleteModal = document.getElementById('deleteLoanConfirm');
 const form = document.getElementById('loanForm');
 const feedback = document.getElementById('loanFormFeedback');
+const timelineData = [];
 
-
-document.addEventListener('DOMContentLoaded', () => {
-  loadData();
-  renderTable();
-  renderTimeline();
-  updateMetrics();
-  setupListeners();
-});
-
-function loadData() {
-  const storedLoans = localStorage.getItem(LOANS_KEY);
-  loansData = storedLoans ? JSON.parse(storedLoans) : [...initialLoans];
-
-  const storedTimeline = localStorage.getItem(TIMELINE_KEY);
-  timelineData = storedTimeline ? JSON.parse(storedTimeline) : [];
+// ===================== API =====================
+async function fetchLoans() {
+  try {
+    const res = await fetch('http://localhost:3000/emprestimos');
+    const json = await res.json();
+    loansData = json || [];
+    renderTable();
+    updateMetrics();
+  } catch (err) {
+    console.error("Erro ao carregar empréstimos:", err);
+  }
 }
 
-function saveData() {
-  localStorage.setItem(LOANS_KEY, JSON.stringify(loansData));
-  localStorage.setItem(TIMELINE_KEY, JSON.stringify(timelineData));
-  updateMetrics();
-  renderTable();
+async function createLoan(data) {
+  try {
+    const res = await fetch('http://localhost:3000/emprestimos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return await res.json();
+  } catch (err) {
+    console.error("Erro ao criar empréstimo:", err);
+  }
 }
 
+async function updateLoan(id, data) {
+  try {
+    const res = await fetch(`http://localhost:3000/emprestimos/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return await res.json();
+  } catch (err) {
+    console.error("Erro ao atualizar empréstimo:", err);
+  }
+}
 
+async function deleteLoan(id) {
+  try {
+    await fetch(`http://localhost:3000/emprestimos/${id}`, { method: 'DELETE' });
+  } catch (err) {
+    console.error("Erro ao deletar empréstimo:", err);
+  }
+}
+
+// ===================== Render Table =====================
 function renderTable(filterText = '', filterStatus = 'all') {
   const tbody = document.getElementById('loansTableBody');
   tbody.innerHTML = '';
@@ -49,7 +63,7 @@ function renderTable(filterText = '', filterStatus = 'all') {
   const search = filterText.toLowerCase().trim();
 
   const filtered = loansData.filter(loan => {
-    const matchText = (loan.book.toLowerCase().includes(search) || loan.user.toLowerCase().includes(search));
+    const matchText = (loan.livro.toLowerCase().includes(search) || loan.usuario.toLowerCase().includes(search));
     const matchStatus = filterStatus === 'all' || loan.status === filterStatus;
     return matchText && matchStatus;
   });
@@ -64,38 +78,40 @@ function renderTable(filterText = '', filterStatus = 'all') {
   filtered.forEach(loan => {
     const row = document.createElement('tr');
     row.innerHTML = `
-            <td>
-                <div class="loan-meta">
-                    <strong style="color:var(--text-main)">${loan.book}</strong>
-                    <span class="loan-sub" style="font-size:0.85rem; color:var(--text-muted)">
-                        ${loan.note ? loan.note : '—'}
-                    </span>
-                </div>
-            </td>
-            <td><strong>${loan.user}</strong></td>
-            <td style="color:var(--text-muted)">${formatDateBr(loan.out)}</td>
-            <td style="color:var(--text-muted)">${formatDateBr(loan.ret)}</td>
-            <td><span class="status-badge ${loan.status}">${getStatusLabel(loan.status)}</span></td>
-            <td>
-                <div class="actions-cell">
-                    <button class="btn-action edit" onclick="openEdit(${loan.id})"><i class="ph-bold ph-pencil-simple"></i></button>
-                    <button class="btn-action delete" onclick="openDelete(${loan.id})"><i class="ph-bold ph-trash"></i></button>
-                </div>
-            </td>
-        `;
+      <td>
+        <div class="loan-meta">
+          <strong style="color:var(--text-main)">${loan.livro}</strong>
+          <span class="loan-sub" style="font-size:0.85rem; color:var(--text-muted)">
+            ${loan.observacao || '—'}
+          </span>
+        </div>
+      </td>
+      <td><strong>${loan.usuario}</strong></td>
+      <td style="color:var(--text-muted)">${formatDateBr(loan.data_retirada)}</td>
+      <td style="color:var(--text-muted)">${formatDateBr(loan.data_devolucao)}</td>
+      <td><span class="status-badge ${loan.status}">${getStatusLabel(loan.status)}</span></td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn-action edit" onclick="openEdit(${loan.id})"><i class="ph-bold ph-pencil-simple"></i></button>
+          <button class="btn-action delete" onclick="openDelete(${loan.id})"><i class="ph-bold ph-trash"></i></button>
+        </div>
+      </td>
+    `;
     tbody.appendChild(row);
   });
 }
 
+// ===================== Modal =====================
 window.openLoanModal = function () {
   editId = null;
   resetForm();
   document.getElementById('loanModalTitle').textContent = "Novo Empréstimo";
   document.getElementById('btnSaveLoan').textContent = "Salvar";
 
-  document.getElementById('inpLoanOut').value = new Date().toISOString().split('T')[0];
+  const today = new Date();
+  document.getElementById('inpLoanOut').value = today.toISOString().split('T')[0];
   const nextWeek = new Date();
-  nextWeek.setDate(nextWeek.getDate() + 7);
+  nextWeek.setDate(today.getDate() + 7);
   document.getElementById('inpLoanReturn').value = nextWeek.toISOString().split('T')[0];
 
   openModal(modal);
@@ -111,118 +127,102 @@ window.openEdit = function (id) {
   document.getElementById('loanModalTitle').textContent = "Editar Empréstimo";
   document.getElementById('btnSaveLoan').textContent = "Atualizar";
 
-  document.getElementById('inpLoanBook').value = loan.book;
-  document.getElementById('inpLoanUser').value = loan.user;
-  document.getElementById('inpLoanOut').value = loan.out;
-  document.getElementById('inpLoanReturn').value = loan.ret;
+  document.getElementById('inpLoanBook').value = loan.livro;
+  document.getElementById('inpLoanUser').value = loan.usuario;
+  document.getElementById('inpLoanOut').value = loan.data_retirada;
+  document.getElementById('inpLoanReturn').value = loan.data_devolucao;
   document.getElementById('inpLoanStatus').value = loan.status;
-  document.getElementById('inpLoanNote').value = loan.note;
+  document.getElementById('inpLoanNote').value = loan.observacao;
 
   openModal(modal);
 };
 
-function handleFormSubmit(e) {
+// ===================== Form =====================
+async function handleFormSubmit(e) {
   e.preventDefault();
 
-  const book = document.getElementById('inpLoanBook').value.trim();
-  const user = document.getElementById('inpLoanUser').value.trim();
+  const livro = document.getElementById('inpLoanBook').value.trim();
+  const usuario = document.getElementById('inpLoanUser').value.trim();
 
-  if (!book || !user) {
+  if (!livro || !usuario) {
     feedback.textContent = "Preencha o nome do livro e do usuário.";
     return;
   }
 
   const formData = {
-    id: editId || Date.now(),
-    book: book,
-    user: user,
-    out: document.getElementById('inpLoanOut').value,
-    ret: document.getElementById('inpLoanReturn').value,
+    livro,
+    usuario,
+    data_retirada: document.getElementById('inpLoanOut').value,
+    data_devolucao: document.getElementById('inpLoanReturn').value,
     status: document.getElementById('inpLoanStatus').value,
-    note: document.getElementById('inpLoanNote').value
+    observacao: document.getElementById('inpLoanNote').value
   };
 
-  if (editId) {
-    const index = loansData.findIndex(l => l.id === editId);
-    if (index !== -1) {
-      loansData[index] = formData;
-      addToTimeline('updated', `Editado: ${book} (${user})`);
+  try {
+    if (editId) {
+      await updateLoan(editId, formData);
+    } else {
+      await createLoan(formData);
     }
-  } else {
-    loansData.unshift(formData);
-    addToTimeline('created', `Novo empréstimo: ${book} para ${user}`);
+
+    await fetchLoans();  // Atualiza todos os empréstimos
+    closeModal(modal);
+  } catch (err) {
+    feedback.textContent = "Erro ao salvar empréstimo.";
+    console.error(err);
   }
-
-  saveData();
-  closeModal(modal);
 }
 
-
-function addToTimeline(type, text) {
-  const entry = {
-    type,
-    text,
-    date: new Date().toISOString()
-  };
-  timelineData.unshift(entry);
-  if (timelineData.length > 20) timelineData.pop();
-  saveData();
-  renderTimeline();
-}
-
-function renderTimeline() {
-  const container = document.getElementById('loanTimeline');
-  container.innerHTML = '';
-
-  if (timelineData.length === 0) {
-    container.innerHTML = `<li class="mini-item" style="justify-content:center; color:#aaa;">Sem histórico recente.</li>`;
-    return;
-  }
-
-  timelineData.forEach(item => {
-    let dotClass = 'info';
-    if (item.type === 'created') dotClass = 'success';
-    if (item.type === 'deleted') dotClass = 'danger';
-    if (item.type === 'returned') dotClass = 'success';
-
-    const li = document.createElement('li');
-    li.className = 'mini-item';
-    li.innerHTML = `
-            <div class="dot ${dotClass}"></div>
-            <div style="flex:1">
-                <strong>${item.text}</strong>
-                <p style="font-size:0.75rem; opacity:0.7">${formatTime(item.date)} - ${formatDateBr(item.date)}</p>
-            </div>
-        `;
-    container.appendChild(li);
-  });
-}
-
-window.clearLoanTimeline = function () {
-  timelineData = [];
-  saveData();
-  renderTimeline();
-}
-
+// ===================== Delete =====================
 window.openDelete = function (id) {
   deleteId = id;
   const loan = loansData.find(l => l.id === Number(id));
-  if (loan) {
-    document.getElementById('deleteLoanText').textContent = `${loan.book} - ${loan.user}`;
-  }
+  if (loan) document.getElementById('deleteLoanText').textContent = `${loan.livro} - ${loan.usuario}`;
   openModal(deleteModal);
 };
 
-window.confirmLoanDelete = function () {
+window.confirmLoanDelete = async function () {
   if (deleteId) {
-    const loan = loansData.find(l => l.id === Number(deleteId));
-    if (loan) addToTimeline('deleted', `Excluído: ${loan.book}`);
-
-    loansData = loansData.filter(l => l.id !== Number(deleteId));
-    saveData();
+    await deleteLoan(deleteId);
+    await fetchLoans();
     closeModal(deleteModal);
   }
 };
+
+// ===================== Metrics =====================
+function updateMetrics() {
+  const active = loansData.filter(l => l.status === 'active').length;
+  const late = loansData.filter(l => l.status === 'late').length;
+  const returned = loansData.filter(l => l.status === 'returned').length;
+
+  document.getElementById('metricActiveLoans').textContent = active;
+  document.getElementById('metricLateLoans').textContent = late;
+  document.getElementById('metricReturned').textContent = returned;
+}
+
+// ===================== Helpers =====================
+function resetForm() {
+  form.reset();
+  feedback.textContent = '';
+}
+
+function setupListeners() {
+  form.addEventListener('submit', handleFormSubmit);
+
+  document.getElementById('loanSearchInput').addEventListener('input', e => {
+    renderTable(e.target.value, document.getElementById('loanStatusFilter').value);
+  });
+  document.getElementById('loanStatusFilter').addEventListener('change', e => {
+    renderTable(document.getElementById('loanSearchInput').value, e.target.value);
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeModal(modal); closeModal(deleteModal); }
+  });
+  document.querySelectorAll('.modal-overlay').forEach(ov => {
+    ov.addEventListener('click', e => { if (e.target === ov) { closeModal(modal); closeModal(deleteModal); } });
+  });
+}
 
 function openModal(el) {
   el.classList.add('open');
@@ -239,62 +239,18 @@ function closeModal(el) {
 window.closeLoanModal = () => closeModal(modal);
 window.closeDeleteLoanModal = () => closeModal(deleteModal);
 
-function resetForm() {
-  form.reset();
-  feedback.textContent = '';
-  const errs = form.querySelectorAll('.input-error');
-  errs.forEach(e => e.classList.remove('input-error'));
-}
-
-function setupListeners() {
-  form.addEventListener('submit', handleFormSubmit);
-
-  document.getElementById('loanSearchInput').addEventListener('input', (e) => {
-    renderTable(e.target.value, document.getElementById('loanStatusFilter').value);
-  });
-  document.getElementById('loanStatusFilter').addEventListener('change', (e) => {
-    renderTable(document.getElementById('loanSearchInput').value, e.target.value);
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { closeModal(modal); closeModal(deleteModal); }
-  });
-  document.querySelectorAll('.modal-overlay').forEach(ov => {
-    ov.addEventListener('click', (e) => {
-      if (e.target === ov) { closeModal(modal); closeModal(deleteModal); }
-    });
-  });
-}
-
-function updateMetrics() {
-  const active = loansData.filter(l => l.status === 'active').length;
-  const late = loansData.filter(l => l.status === 'late').length;
-  const returned = loansData.filter(l => l.status === 'returned').length;
-
-  document.getElementById('metricActiveLoans').textContent = active;
-  document.getElementById('metricLateLoans').textContent = late;
-  document.getElementById('metricReturned').textContent = returned;
-}
-
-function formatDateBr(isoDate) {
-  if (!isoDate) return '--';
-  if (isoDate.includes('T')) isoDate = isoDate.split('T')[0];
-  const parts = isoDate.split('-');
-  if (parts.length !== 3) return isoDate;
-  return `${parts[2]}/${parts[1]}/${parts[0]}`;
-}
-
-function formatTime(isoDate) {
-  const d = new Date(isoDate);
-  return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+function formatDateBr(date) {
+  if (!date) return '--';
+  const d = new Date(date);
+  return d.toLocaleDateString('pt-BR');
 }
 
 function getStatusLabel(status) {
-  const map = {
-    active: 'Ativo',
-    pending: 'Pendente',
-    late: 'Atrasado',
-    returned: 'Devolvido'
-  };
-  return map[status] || status;
-} 
+  return { active: 'Ativo', pending: 'Pendente', late: 'Atrasado', returned: 'Devolvido' }[status] || status;
+}
+
+// ===================== Inicialização =====================
+document.addEventListener('DOMContentLoaded', () => {
+  fetchLoans();
+  setupListeners();
+});
