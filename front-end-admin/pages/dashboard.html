@@ -7,24 +7,26 @@
     <title>Dashboard | Admin Bibliotheca</title>
 
     <link rel="stylesheet" href="../css/dashboard.css">
-
+    <link rel="stylesheet" href="../css/chatbot.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <script>
-    (function () {
-        const prefersDark = localStorage.getItem('admin_darkmode') === 'true';
-        const cursorOff = localStorage.getItem('admin_cursor') === 'false';
-        
-        if (prefersDark) document.documentElement.classList.add('dark-mode');
-        if (cursorOff) document.documentElement.classList.add('no-custom-cursor');
-    })();
-</script>
+        (function () {
+            const prefersDark = localStorage.getItem('admin_darkmode') === 'true';
+            const cursorOff = localStorage.getItem('admin_cursor') === 'false';
+
+            if (prefersDark) document.documentElement.classList.add('dark-mode');
+            if (cursorOff) document.documentElement.classList.add('no-custom-cursor');
+        })();
+    </script>
 </head>
 
 <body>
+    <div id="chatbot-component"></div>
+
     <div class="admin-container">
 
         <aside class="admin-sidebar">
@@ -233,6 +235,8 @@
     <script src="../script/admin-global.js" defer></script>
     <script src="../script/sidebar.js" defer></script>
     <script src="../script/dashboard.js" defer></script>
+    <script src="../script/chatbot.js" defer></script>
+
 </body>
 
 </html>

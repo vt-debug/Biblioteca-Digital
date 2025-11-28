@@ -8,27 +8,32 @@
 
     <link rel="stylesheet" href="../css/dashboard.css">
     <link rel="stylesheet" href="../css/settings.css">
+    <link rel="stylesheet" href="../css/chatbot.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,600&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
+
     <script>
-    (function () {
-        const prefersDark = localStorage.getItem('admin_darkmode') === 'true';
-        const cursorOff = localStorage.getItem('admin_cursor') === 'false';
-        
-        if (prefersDark) document.documentElement.classList.add('dark-mode');
-        if (cursorOff) document.documentElement.classList.add('no-custom-cursor');
-    })();
-</script>
+        (function () {
+            const prefersDark = localStorage.getItem('admin_darkmode') === 'true';
+            const cursorOff = localStorage.getItem('admin_cursor') === 'false';
+            if (prefersDark) document.documentElement.classList.add('dark-mode');
+            if (cursorOff) document.documentElement.classList.add('no-custom-cursor');
+        })();
+    </script>
 </head>
 
 <body>
+
     <div id="adminToast" class="toast-bubble" role="status" aria-live="polite">
         <i class="ph-fill ph-check-circle"></i> <span></span>
     </div>
+    <div id="chatbot-component"></div>
 
     <div class="admin-container">
+
         <aside class="admin-sidebar">
             <div class="sidebar-header">
                 <div class="logo-icon-wrapper"><i class="ph-fill ph-books logo-icon"></i></div>
@@ -37,15 +42,21 @@
                     <span class="badge-admin">Admin</span>
                 </div>
             </div>
+
             <nav class="admin-menu">
                 <p class="menu-label">Gestão</p>
                 <a href="dashboard.html" class="menu-link"><i class="ph ph-squares-four"></i> Dashboard</a>
-                <a href="books.html" class="menu-link"><i class="ph ph-books"></i> Acervo <span class="pill-count" data-count="books">0</span></a>
-                <a href="users.html" class="menu-link"><i class="ph ph-users"></i> Usuários <span class="pill-count" data-count="users">0</span></a>
-                <a href="loans.html" class="menu-link"><i class="ph ph-arrows-left-right"></i> Empréstimos <span class="pill-count" data-count="loans">0</span></a>
+                <a href="books.html" class="menu-link"><i class="ph ph-books"></i> Acervo <span class="pill-count"
+                        data-count="books">0</span></a>
+                <a href="users.html" class="menu-link"><i class="ph ph-users"></i> Usuários <span class="pill-count"
+                        data-count="users">0</span></a>
+                <a href="loans.html" class="menu-link"><i class="ph ph-arrows-left-right"></i> Empréstimos <span
+                        class="pill-count" data-count="loans">0</span></a>
+
                 <p class="menu-label">Sistema</p>
                 <a href="settings.html" class="menu-link active"><i class="ph ph-gear"></i> Configurações</a>
             </nav>
+
             <div class="admin-footer">
                 <div class="admin-profile">
                     <img src="https://i.pravatar.cc/150?img=11" alt="Admin" data-admin-avatar>
@@ -59,7 +70,7 @@
             <header class="admin-header animate-fade-down">
                 <div class="header-title">
                     <h1>Configurações</h1>
-                    <p>Personalize a aparência e os recursos do sistema.</p>
+                    <p>Gerencie o sistema, personalize a aparência e configure o chat.</p>
                 </div>
                 <div class="header-actions">
                     <button class="action-btn primary" id="btnSaveSettings">
@@ -84,17 +95,48 @@
                 </div>
             </div>
 
-            <section class="settings-grid">
+            <section class="settings-grid settings-wrapper">
+
                 <article class="settings-card animate-fade-up">
+                    <header class="card-header">
+                        <p class="label">Sistema</p>
+                        <h3>Dados & Perfil</h3>
+                    </header>
+
+                    <div class="form-group">
+                        <label>URL do Avatar (Admin)</label>
+                        <div class="input-with-preview">
+                            <img id="avatarPreview" src="https://i.pravatar.cc/150?img=11" alt="Avatar">
+                            <input type="text" id="avatarInput" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <div class="data-actions">
+                        <div class="setting-info">
+                            <strong>Backup de Dados</strong>
+                            <p>Exporte ou importe o banco de dados local.</p>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn-ghost" id="btnExport"><i class="ph ph-download-simple"></i> Exportar
+                                JSON</button>
+                            <label class="btn-ghost file-btn">
+                                <i class="ph ph-upload-simple"></i> Importar
+                                <input type="file" id="fileImport" accept=".json" hidden>
+                            </label>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="settings-card animate-fade-up" style="animation-delay:0.05s;">
                     <header class="card-header">
                         <p class="label">Visual</p>
                         <h3>Aparência & Tema</h3>
                     </header>
-                    
+
                     <div class="setting-row">
                         <div class="setting-info">
                             <strong>Modo Escuro</strong>
-                            <p>Alternar para o tema noturno de alto contraste.</p>
+                            <p>Ativar tema escuro.</p>
                         </div>
                         <label class="switch">
                             <input type="checkbox" id="toggleDark">
@@ -105,7 +147,7 @@
                     <div class="setting-row">
                         <div class="setting-info">
                             <strong>Cursor Personalizado</strong>
-                            <p>Ativar o cursor fluido do sistema.</p>
+                            <p>Ativar o cursor fluido.</p>
                         </div>
                         <label class="switch">
                             <input type="checkbox" id="toggleCursor" checked>
@@ -125,12 +167,12 @@
                         </div>
                     </header>
 
-                    <div class="chat-grid-layout">
+                    <div class="chat-setup-grid">
                         <div class="chat-controls">
                             <div class="setting-row compact">
                                 <div class="setting-info">
                                     <strong>Habilitar Widget</strong>
-                                    <p>Mostrar chat para visitantes.</p>
+                                    <p>Exibir chat no site.</p>
                                 </div>
                                 <label class="switch">
                                     <input type="checkbox" id="toggleChat" checked>
@@ -161,60 +203,32 @@
                                 <div class="preview-header">
                                     <div class="agent-info">
                                         <div class="agent-avatar"><i class="ph-fill ph-robot"></i></div>
-                                        <div>
-                                            <strong>Assistente</strong>
-                                            <span>Agora mesmo</span>
-                                        </div>
+                                        <div><strong>Assistente</strong><span>Agora mesmo</span></div>
                                     </div>
                                     <i class="ph-bold ph-dots-three"></i>
                                 </div>
+
                                 <div class="preview-body">
                                     <div class="msg-bubble received" id="chatPreviewMessage">
                                         Olá! Como posso ajudar?
                                     </div>
-                                    <div class="msg-bubble sent">
-                                        Gostaria de reservar um livro.
-                                    </div>
+                                    <div class="msg-bubble sent">Gostaria de reservar um livro.</div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </article>
 
-                <article class="settings-card animate-fade-up" style="animation-delay:0.2s;">
-                    <header class="card-header">
-                        <p class="label">Sistema</p>
-                        <h3>Dados & Perfil</h3>
-                    </header>
-
-                    <div class="form-group">
-                        <label>URL do Avatar (Admin)</label>
-                        <div class="input-with-preview">
-                            <img id="avatarPreview" src="https://i.pravatar.cc/150?img=11" alt="Avatar">
-                            <input type="text" id="avatarInput" placeholder="https://...">
-                        </div>
-                    </div>
-
-                    <div class="data-actions">
-                        <div class="setting-info">
-                            <strong>Backup de Dados</strong>
-                            <p>Exporte o banco de dados local (Livros, Usuários, Empréstimos).</p>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn-ghost" id="btnExport"><i class="ph ph-download-simple"></i> Exportar JSON</button>
-                            <label class="btn-ghost file-btn">
-                                <i class="ph ph-upload-simple"></i> Importar
-                                <input type="file" id="fileImport" accept=".json" hidden>
-                            </label>
-                        </div>
                     </div>
                 </article>
             </section>
         </main>
     </div>
 
+
     <script src="../script/admin-global.js" defer></script>
     <script src="../script/sidebar.js" defer></script>
     <script src="../script/settings.js" defer></script>
+    <script src="../script/chatbot.js" defer></script>
+
 </body>
+
 </html>
