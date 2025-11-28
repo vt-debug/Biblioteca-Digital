@@ -1,27 +1,14 @@
 (function () {
-    const BOOKS_KEY = 'bibliotheca_books_db';
-    const USERS_KEY = 'bibliotheca_users_db';
-    const LOANS_KEY = 'bibliotheca_loans_db';
-
-    const getList = (key) => {
-        try {
-            const raw = localStorage.getItem(key);
-            if (!raw) return [];
-            const parsed = JSON.parse(raw);
-            return Array.isArray(parsed) ? parsed : [];
-        } catch (e) {
-            return [];
-        }
+    const API_ENDPOINTS = {
+        books: 'http://localhost:3000/livros',
+        users: 'http://localhost:3000/usuarios',
+        loans: 'http://localhost:3000/emprestimos'
     };
 
-    const books = getList(BOOKS_KEY);
-    const users = getList(USERS_KEY);
-    const loans = getList(LOANS_KEY);
-
     const counts = {
-        books: books.length,
-        users: users.length,
-        loans: loans.length
+        books: 0,
+        users: 0,
+        loans: 0
     };
 
     const ensurePill = (link, key) => {
@@ -57,11 +44,39 @@
         dot.style.opacity = '0.75';
     };
 
-    const links = Array.from(document.querySelectorAll('.menu .item, .admin-menu a.menu-link, .admin-menu a'));
-    links.forEach(link => {
-        const href = (link.getAttribute('href') || '').toLowerCase();
-        if (href.includes('books')) ensurePill(link, 'books');
-        if (href.includes('users')) ensurePill(link, 'users');
-        if (href.includes('loans')) ensurePill(link, 'loans');
-    });
+    const updatePills = () => {
+        const links = Array.from(document.querySelectorAll('.menu .item, .admin-menu a.menu-link, .admin-menu a'));
+        links.forEach(link => {
+            const href = (link.getAttribute('href') || '').toLowerCase();
+            if (href.includes('books')) ensurePill(link, 'books');
+            if (href.includes('users')) ensurePill(link, 'users');
+            if (href.includes('loans')) ensurePill(link, 'loans');
+        });
+    };
+
+    const fetchCounts = async () => {
+        try {
+            const [booksRes, usersRes, loansRes] = await Promise.all([
+                fetch(API_ENDPOINTS.books),
+                fetch(API_ENDPOINTS.users),
+                fetch(API_ENDPOINTS.loans)
+            ]);
+
+            const [booksData, usersData, loansData] = await Promise.all([
+                booksRes.json(),
+                usersRes.json(),
+                loansRes.json()
+            ]);
+
+            counts.books = Array.isArray(booksData) ? booksData.length : 0;
+            counts.users = Array.isArray(usersData) ? usersData.length : 0;
+            counts.loans = Array.isArray(loansData) ? loansData.length : 0;
+
+            updatePills();
+        } catch (error) {
+            console.error('Erro ao buscar dados da API:', error);
+        }
+    };
+
+    fetchCounts();
 })();

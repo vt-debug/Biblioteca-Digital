@@ -9,11 +9,14 @@ const model = client.getGenerativeModel({ model: MODEL_NAME });
 
 export type IntentName =
     | "COUNT_BOOKS"
+    | "COUNT_WEEKLY_LOANS"
+    | "BOOKS_TOTAL"
     | "LIST_BOOKS"
     | "LIST_AVAILABLE_BOOKS"
     | "COUNT_USERS"
     | "COUNT_ACTIVE_LOANS"
     | "NAVIGATE"
+    | "ESTOQUE_LIVROS_TOTAL"
     | "SMALLTALK"
     | "UNKNOWN";
 
@@ -37,6 +40,8 @@ Retorne **somente JSON válido**, no formato EXATO:
 
 INTENTS VÁLIDAS:
 - COUNT_BOOKS → quando perguntar quantidade de livros
+- COUNT_WEEKLY_LOANS → quando perguntar quantidade de empréstimos
+- ESTOQUE_LIVROS_TOTAL → quando perguntar quantidade de livros no estoque
 - LIST_BOOKS → listar livros / por título / autor
 - LIST_AVAILABLE_BOOKS → listar somente os disponíveis
 - COUNT_USERS → perguntar total de usuários cadastrados
@@ -99,6 +104,24 @@ export async function handleIntent(intent: IntentResult) {
                 };
             }
 
+            case "ESTOQUE_LIVROS_TOTAL": {
+                const { data, error } = await supabase
+                    .from("livros")
+                    .select("estoque");
+
+                if (error) return {
+                    type: "error",
+                    text: "Não consegui buscar o estoque."
+                };
+
+                const total = data.reduce((acc, item) => acc + (item.estoque ?? 0), 0);
+
+                return {
+                    type: "ok",
+                    text: `Temos atualmente **${total} livros** em estoque.`
+                };
+            }
+
             case "LIST_BOOKS": {
                 const limit = Number(entities?.limit) || 10;
 
@@ -151,6 +174,7 @@ export async function handleIntent(intent: IntentResult) {
                     text: `Temos atualmente **${count ?? 0} usuários** cadastrados.`
                 };
             }
+
 
             case "COUNT_ACTIVE_LOANS": {
                 const { count } = await supabase

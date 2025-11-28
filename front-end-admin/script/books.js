@@ -239,10 +239,10 @@ window.closeBookModal = function () {
 
 window.deleteBook = function (id) {
     bookIdToDelete = id;
-    const book = booksData.find(b => b.id === id);
+    const book = booksData.find(b => b.id == id);
     const target = document.getElementById("deleteBookName");
     if (book && target) {
-        target.innerHTML = `<strong>${escapeHtml(book.titulo)}</strong><span style="color: var(--text-muted); font-weight: 500;">(autor: ${escapeHtml(book.autor)})</span>`;
+        target.innerHTML = `<strong>${escapeHtml(book.titulo)}</strong>`;
     }
     deleteModal.classList.add('open');
     document.body.classList.add('modal-open');
