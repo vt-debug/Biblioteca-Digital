@@ -40,6 +40,8 @@ Retorne **somente JSON válido**, no formato EXATO:
 
 INTENTS VÁLIDAS:
 - COUNT_BOOKS → quando perguntar quantidade de livros
+- COUNT_WEEKLY_LOANS → quando perguntar quantidade de empréstimos
+- ESTOQUE_LIVROS_TOTAL → quando perguntar quantidade de livros no estoque
 - LIST_BOOKS → listar livros / por título / autor
 - LIST_AVAILABLE_BOOKS → listar somente os disponíveis
 - COUNT_USERS → perguntar total de usuários cadastrados
@@ -102,6 +104,24 @@ export async function handleIntent(intent: IntentResult) {
                 };
             }
 
+            case "ESTOQUE_LIVROS_TOTAL": {
+                const { data, error } = await supabase
+                    .from("livros")
+                    .select("estoque");
+
+                if (error) return {
+                    type: "error",
+                    text: "Não consegui buscar o estoque."
+                };
+
+                const total = data.reduce((acc, item) => acc + (item.estoque ?? 0), 0);
+
+                return {
+                    type: "ok",
+                    text: `Temos atualmente **${total} livros** em estoque.`
+                };
+            }
+
             case "LIST_BOOKS": {
                 const limit = Number(entities?.limit) || 10;
 
@@ -155,16 +175,6 @@ export async function handleIntent(intent: IntentResult) {
                 };
             }
 
-            case "ESTOQUE_LIVROS_TOTAL": {
-                const { count } = await supabase
-                    .from("livros")
-                    .select("estoque", { count: "exact", head: true });
-
-                return {
-                    type: "ok",
-                    text: `Temos atualmente **${count ?? 0} livros** em estoque.`
-                };
-            }
 
             case "COUNT_ACTIVE_LOANS": {
                 const { count } = await supabase
