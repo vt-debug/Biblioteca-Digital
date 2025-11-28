@@ -52,21 +52,37 @@ function initCustomCursor() {
     cursorDot.className = 'cursor-dot';
     cursorOutline = document.createElement('div');
     cursorOutline.className = 'cursor-outline';
+
     document.body.appendChild(cursorDot);
     document.body.appendChild(cursorOutline);
 
+    let targetX = 0, targetY = 0;
+    let currentX = 0, currentY = 0;
+
     window.addEventListener('mousemove', (e) => {
-        const posX = e.clientX;
-        const posY = e.clientY;
+        targetX = e.clientX;
+        targetY = e.clientY;
 
-        cursorDot.style.transform = `translate3d(${posX}px, ${posY}px, 0) translate(-50%, -50%)`;
+        // Cursor dot segue imediatamente
+        cursorDot.style.left = `${targetX}px`;
+        cursorDot.style.top = `${targetY}px`;
         cursorDot.style.opacity = 1;
-
-        cursorOutline.animate({
-            transform: `translate3d(${posX}px, ${posY}px, 0) translate(-50%, -50%)`
-        }, { duration: 500, fill: 'forwards' });
-        cursorOutline.style.opacity = 1;
     });
+
+    // Cursor outline segue com suavidade (efeito de perseguição)
+    function animateOutline() {
+        // Interpolação suave com atraso maior (0.08 = mais lento, mais atraso)
+        // Quanto menor o valor, mais lento e mais atraso
+        currentX += (targetX - currentX) * 0.08;
+        currentY += (targetY - currentY) * 0.08;
+
+        cursorOutline.style.left = `${currentX}px`;
+        cursorOutline.style.top = `${currentY}px`;
+        cursorOutline.style.opacity = 1;
+
+        requestAnimationFrame(animateOutline);
+    }
+    animateOutline();
 
     const interactives = `a, button, input, textarea, select, label, .clickable, .menu-link, .action-btn, .switch, .pref-pill, .settings-card, .btn-action, .health-card, .close-modal-light`;
 
