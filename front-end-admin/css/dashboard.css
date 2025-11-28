@@ -83,8 +83,8 @@ html.dark-mode body {
 .cursor-dot,
 .cursor-outline {
     position: fixed;
-    top: 50%;
-    left: 50%;
+    top: 0;
+    left: 0;
     pointer-events: none;
     transform: translate3d(-50%, -50%, 0);
     border-radius: 50%;
