@@ -189,8 +189,16 @@ async function loadWeeklyLoanChart() {
     loan.retirada || 
     null;
 
+  // Função para extrair data de devolução
+  const getReturnDate = (loan) => 
+    loan.data_devolucao || 
+    loan.returnDate || 
+    loan.returnedAt || 
+    loan.devolucao ||
+    null;
+
   // Contadores por dia da semana (Seg → Dom)
-  const weeklyCount = {
+  const weeklyLoans = {
     Seg: 0,
     Ter: 0,
     Qua: 0,
@@ -200,47 +208,109 @@ async function loadWeeklyLoanChart() {
     Dom: 0
   };
 
+  const weeklyReturns = {
+    Seg: 0,
+    Ter: 0,
+    Qua: 0,
+    Qui: 0,
+    Sex: 0,
+    Sáb: 0,
+    Dom: 0
+  };
+
+  // Mapa de dia da semana (0 = Domingo, 1 = Segunda, etc.)
+  const dayMap = {
+    0: "Dom",
+    1: "Seg",
+    2: "Ter",
+    3: "Qua",
+    4: "Qui",
+    5: "Sex",
+    6: "Sáb"
+  };
+
   loansData.forEach((loan) => {
-    const dateStr = getLoanDate(loan);
-    if (!dateStr) return;
+    // Contabiliza empréstimos
+    const loanDateStr = getLoanDate(loan);
+    if (loanDateStr) {
+      const loanDate = new Date(loanDateStr);
+      if (!isNaN(loanDate)) {
+        const dayName = dayMap[loanDate.getDay()];
+        if (weeklyLoans[dayName] !== undefined) {
+          weeklyLoans[dayName]++;
+        }
+      }
+    }
 
-    const date = new Date(dateStr);
-    if (isNaN(date)) return;
-
-    // Mapa de dia da semana (0 = Domingo, 1 = Segunda, etc.)
-    const dayMap = {
-      0: "Dom",
-      1: "Seg",
-      2: "Ter",
-      3: "Qua",
-      4: "Qui",
-      5: "Sex",
-      6: "Sáb"
-    };
-
-    const dayName = dayMap[date.getDay()];
-    if (weeklyCount[dayName] !== undefined) {
-      weeklyCount[dayName]++;
+    // Contabiliza devoluções SOMENTE se realmente foi devolvido
+    const status = (loan.status || '').toLowerCase();
+    const isReturned = status === 'returned' || status === 'devolvido' || status === 'concluído' || status === 'done';
+    
+    if (isReturned) {
+      const returnDateStr = getReturnDate(loan);
+      if (returnDateStr) {
+        const returnDate = new Date(returnDateStr);
+        if (!isNaN(returnDate)) {
+          const dayName = dayMap[returnDate.getDay()];
+          if (weeklyReturns[dayName] !== undefined) {
+            weeklyReturns[dayName]++;
+          }
+        }
+      } else {
+        // Fallback: se foi devolvido mas não tem data de devolução, usa data de retirada
+        if (loanDateStr) {
+          const loanDate = new Date(loanDateStr);
+          if (!isNaN(loanDate)) {
+            const dayName = dayMap[loanDate.getDay()];
+            if (weeklyReturns[dayName] !== undefined) {
+              weeklyReturns[dayName]++;
+            }
+          }
+        }
+      }
     }
   });
 
   // Dados na ordem correta (Seg → Dom)
-  const data = [
-    weeklyCount.Seg,
-    weeklyCount.Ter,
-    weeklyCount.Qua,
-    weeklyCount.Qui,
-    weeklyCount.Sex,
-    weeklyCount.Sáb,
-    weeklyCount.Dom
+  const loansData_chart = [
+    weeklyLoans.Seg,
+    weeklyLoans.Ter,
+    weeklyLoans.Qua,
+    weeklyLoans.Qui,
+    weeklyLoans.Sex,
+    weeklyLoans.Sáb,
+    weeklyLoans.Dom
   ];
 
-  // Configuração do ApexCharts com estilização premium
+  const returnsData_chart = [
+    weeklyReturns.Seg,
+    weeklyReturns.Ter,
+    weeklyReturns.Qua,
+    weeklyReturns.Qui,
+    weeklyReturns.Sex,
+    weeklyReturns.Sáb,
+    weeklyReturns.Dom
+  ];
+
+  // Pega as cores CSS do design system
+  const rootStyles = getComputedStyle(document.documentElement);
+  const primaryColor = rootStyles.getPropertyValue('--primary').trim() || '#be9b73';
+  const primaryColor600 = rootStyles.getPropertyValue('--primary-600').trim() || '#a4825e';
+  const secondaryColor = rootStyles.getPropertyValue('--secondary').trim() || '#432c22';
+  const textMuted = rootStyles.getPropertyValue('--text-muted').trim() || '#8c7b75';
+
+  // Configuração do ApexCharts com estilização premium e cores do design system
   const options = {
-    series: [{ 
-      name: "Empréstimos", 
-      data 
-    }],
+    series: [
+      { 
+        name: "Empréstimos", 
+        data: loansData_chart 
+      },
+      { 
+        name: "Devoluções", 
+        data: returnsData_chart 
+      }
+    ],
     chart: {
       type: "bar",
       height: 280,
@@ -262,26 +332,26 @@ async function loadWeeklyLoanChart() {
     },
     plotOptions: {
       bar: {
-        borderRadius: 10,
+        borderRadius: 8,
         borderRadiusApplication: 'end',
-        columnWidth: "55%",
+        columnWidth: "65%",
         distributed: false,
         dataLabels: {
           position: 'top'
         }
       }
     },
-    colors: ["#667eea"],
+    colors: [primaryColor, 'rgba(67, 44, 34, 0.3)'],
     fill: {
-      type: 'gradient',
+      type: ['gradient', 'solid'],
       gradient: {
         shade: 'light',
         type: "vertical",
-        shadeIntensity: 0.5,
-        gradientToColors: ['#764ba2'],
+        shadeIntensity: 0.4,
+        gradientToColors: [primaryColor600, undefined],
         inverseColors: false,
         opacityFrom: 1,
-        opacityTo: 0.9,
+        opacityTo: 0.85,
         stops: [0, 100]
       }
     },
@@ -293,21 +363,23 @@ async function loadWeeklyLoanChart() {
       offsetY: -20,
       style: {
         fontSize: '11px',
-        colors: ["#667eea"],
-        fontWeight: 600
+        colors: [secondaryColor],
+        fontWeight: 700
       }
     },
     xaxis: {
       categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
       labels: {
         style: {
-          colors: '#94a3b8',
+          colors: [textMuted, textMuted, textMuted, textMuted, textMuted, textMuted, textMuted],
           fontSize: '13px',
-          fontWeight: 500
+          fontWeight: 600
         }
       },
       axisBorder: {
-        show: false
+        show: true,
+        color: 'rgba(67, 44, 34, 0.1)',
+        height: 1
       },
       axisTicks: {
         show: false
@@ -316,8 +388,9 @@ async function loadWeeklyLoanChart() {
     yaxis: {
       labels: {
         style: {
-          colors: '#94a3b8',
-          fontSize: '12px'
+          colors: textMuted,
+          fontSize: '12px',
+          fontWeight: 600
         },
         formatter: function(val) {
           return Math.floor(val);
@@ -325,12 +398,12 @@ async function loadWeeklyLoanChart() {
       }
     },
     grid: {
-      borderColor: '#e2e8f0',
-      strokeDashArray: 3,
+      borderColor: 'rgba(67, 44, 34, 0.08)',
+      strokeDashArray: 4,
       padding: {
         top: 0,
-        right: 10,
-        bottom: 0,
+        right: 15,
+        bottom: 5,
         left: 10
       },
       xaxis: {
@@ -340,33 +413,41 @@ async function loadWeeklyLoanChart() {
         lines: { show: true }
       }
     },
+    legend: {
+      show: false  // Removida a legenda duplicada
+    },
     tooltip: {
       enabled: true,
-      theme: 'dark',
+      shared: true,
+      intersect: false,
+      theme: 'light',
       style: {
         fontSize: '13px',
         fontFamily: 'Outfit, sans-serif'
       },
       y: {
         formatter: function(val) {
-          return val + (val === 1 ? " empréstimo" : " empréstimos");
+          if (val === undefined || val === null) return '0';
+          return val + (val === 1 ? " item" : " itens");
         }
       },
-      marker: {
-        show: true
+      x: {
+        formatter: function(val) {
+          return val || '';
+        }
       }
     },
     states: {
       hover: {
         filter: {
           type: 'lighten',
-          value: 0.15
+          value: 0.08
         }
       },
       active: {
         filter: {
           type: 'darken',
-          value: 0.15
+          value: 0.1
         }
       }
     }
@@ -410,10 +491,11 @@ async function renderActivityList() {
   if (!list) return;
   list.innerHTML = "";
 
-  // Limita para 4 itens
-  const items = loanHistory.slice(0, 4);
+  // Força o limite máximo de 4 itens (não pode passar disso para manter a responsividade)
+  const MAX_ACTIVITIES = 4;
+  const items = Array.isArray(loanHistory) ? loanHistory.slice(0, MAX_ACTIVITIES) : [];
 
-  if (!items.length) {
+  if (!items.length || items.length === 0) {
     list.innerHTML = "<li class='empty'>Nenhuma atividade registrada.</li>";
     return;
   }
