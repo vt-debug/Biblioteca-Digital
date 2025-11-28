@@ -299,6 +299,11 @@ function logLoanAction(oldData, newData, acao) {
     data_retirada: new Date()
   });
 
+  // IMPORTANTE: Limita para no máximo 4 atividades
+  if (loanHistory.length > 4) {
+    loanHistory.length = 4;
+  }
+
   saveLoanHistory(); // salva no localStorage
   updateLoanTimeline();
 }
@@ -339,7 +344,7 @@ function updateLoanTimeline() {
   const timeline = document.getElementById('loanTimeline');
   timeline.innerHTML = '';
 
-  loanHistory.slice(0, 5).forEach(loan => {
+  loanHistory.slice(0, 4).forEach(loan => {
     const li = document.createElement('li');
     li.style.padding = '12px 16px';
     li.style.marginBottom = '10px';

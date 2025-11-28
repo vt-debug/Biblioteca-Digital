@@ -1,263 +1,794 @@
-const coverPool = {
-    "Duna": "https://images.unsplash.com/photo-1528207776546-365bb710ee93?auto=format&fit=crop&w=360&q=80",
-    "1984": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=360&q=80",
-    "O Hobbit": "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=360&q=80",
-    "Sapiens": "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=360&q=80",
-    "Verity": "https://images.unsplash.com/photo-1523475472560-d2df97ec485c?auto=format&fit=crop&w=360&q=80",
-    "default": "https://images.unsplash.com/photo-1455884981818-54cb785db6fc?auto=format&fit=crop&w=360&q=80"
+// ============================================================
+// Dashboard.js - Refatorado e Otimizado
+// ============================================================
+
+// -----------------------------
+// Configuração da API
+// -----------------------------
+const API_BASE = 'http://localhost:3000';
+const API_ENDPOINTS = {
+  loans: `${API_BASE}/emprestimos`,
+  users: `${API_BASE}/usuarios`,
+  books: `${API_BASE}/livros`
 };
 
-const avatarPool = [
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=80",
-    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=160&q=80",
-    "https://images.unsplash.com/photo-1524504388940-9f8a5c0b0bff?auto=format&fit=crop&w=160&q=80",
-    "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=160&q=80",
-    "https://images.unsplash.com/photo-1524504388940-1e1899c0f5b7?auto=format&fit=crop&w=160&q=80",
-    "https://images.unsplash.com/photo-1525134479668-1bee5c7c6845?auto=format&fit=crop&w=160&q=80",
-    "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=160&q=80",
-    "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=160&q=80",
-    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&q=80"
-];
-
-const defaultLoans = [
-    { id: 1, book: "Duna", user: "Ana Clara", date: "12 Out", deadline: "19 Out", status: "active" },
-    { id: 2, book: "1984", user: "Lucas P.", date: "05 Out", deadline: "12 Out", status: "late" },
-    { id: 3, book: "O Hobbit", user: "Sofia M.", date: "14 Out", deadline: "21 Out", status: "pending" },
-    { id: 4, book: "Sapiens", user: "Pedro H.", date: "10 Out", deadline: "17 Out", status: "active" },
-    { id: 5, book: "Verity", user: "Mariana", date: "20 Out", deadline: "27 Out", status: "active" }
-];
-
-const weeklyFlow = [
-    { day: "Seg", loans: 12, returns: 9 },
-    { day: "Ter", loans: 16, returns: 11 },
-    { day: "Qua", loans: 10, returns: 12 },
-    { day: "Qui", loans: 18, returns: 15 },
-    { day: "Sex", loans: 13, returns: 10 },
-    { day: "Sáb", loans: 7, returns: 5 },
-    { day: "Dom", loans: 5, returns: 4 }
-];
-
-const activityFeed = [
-    { title: "Renovação solicitada", desc: "Ana Clara pediu +3 dias para “Duna”.", time: "09:20", type: "info" },
-    { title: "Devolução atrasada", desc: "Lucas P. está com “1984” há 3 dias.", time: "08:15", type: "warning" },
-    { title: "Novo cadastro", desc: "Sofia M. completou registro e-verificação.", time: "Ontem", type: "success" }
-];
-
-const defaultUsers = [
-    { id: 1, name: "Ana Clara", email: "ana@example.com", role: "Leitor", status: "active" },
-    { id: 2, name: "Lucas Prado", email: "lucas@example.com", role: "Editor", status: "pending" },
-    { id: 3, name: "Sofia Martins", email: "sofia@example.com", role: "Leitor", status: "active" },
-    { id: 4, name: "Carlos Almeida", email: "carlos@example.com", role: "Admin", status: "active" },
-    { id: 5, name: "Fernanda Lopes", email: "fernanda@example.com", role: "Leitor", status: "suspended" }
-];
-
+// Chaves do localStorage
 const BOOKS_KEY = 'bibliotheca_books_db';
 const LOANS_KEY = 'bibliotheca_loans_db';
 const USERS_KEY = 'bibliotheca_users_db';
-const DEFAULT_BOOK_COUNT = 1248;
 
-const fallbackCover = "https://placehold.co/60x80?text=Livro";
-const fallbackAvatar = "https://placehold.co/60x60?text=User";
+// State global
+let loansData = [];
+let usersData = [];
+let booksData = [];
+let weeklyChart = null;
 
-const shuffledAvatars = shuffle([...avatarPool]);
+// Histórico de empréstimos (para atividades recentes)
+const loanHistoryKey = "loanHistory";
+let loanHistory = [];
 
-let loansData = getStored(LOANS_KEY, defaultLoans.map(item => ({ ...item })));
-const usingStoredLoans = !!localStorage.getItem(LOANS_KEY);
-
-if (!usingStoredLoans) {
-    loansData = loansData.map((loan, index) => ({
-        ...loan,
-        cover: resolveCover(loan.book, index),
-        avatar: resolveAvatar(index)
-    }));
+// -----------------------------
+// Utility Functions
+// -----------------------------
+function timeoutPromise(ms, promise) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('timeout')), ms);
+    promise
+      .then(res => { clearTimeout(timer); resolve(res); })
+      .catch(err => { clearTimeout(timer); reject(err); });
+  });
 }
 
-let usersData = getStored(USERS_KEY, defaultUsers);
-
-function resolveCover(title, index = 0) {
-    if (title && coverPool[title]) return coverPool[title];
-    const list = Object.keys(coverPool)
-        .filter(key => key !== 'default')
-        .map(key => coverPool[key]);
-    return list[index % list.length] || coverPool.default;
-}
-
-function resolveAvatar(index = 0) {
-    const pick = shuffledAvatars[index % shuffledAvatars.length];
-    return pick || fallbackAvatar;
-}
-
-function shuffle(list) {
-    for (let i = list.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [list[i], list[j]] = [list[j], list[i]];
-    }
-    return list;
-}
-
-function getStored(key, fallback) {
-    try {
-        const raw = localStorage.getItem(key);
-        if (!raw) return fallback;
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : fallback;
-    } catch (e) {
-        return fallback;
-    }
-}
-
-function getCatalogCount() {
-    try {
-        const raw = localStorage.getItem(BOOKS_KEY);
-        if (!raw) return DEFAULT_BOOK_COUNT;
-        const list = JSON.parse(raw);
-        if (!Array.isArray(list)) return DEFAULT_BOOK_COUNT;
-        return list.length || DEFAULT_BOOK_COUNT;
-    } catch (e) {
-        return DEFAULT_BOOK_COUNT;
-    }
+async function apiFetch(url, opts = {}) {
+  try {
+    const res = await timeoutPromise(6000, fetch(url, opts));
+    if (!res.ok) throw new Error('Network response not ok ' + res.status);
+    return await res.json();
+  } catch (e) {
+    console.warn('apiFetch failed for', url, e.message);
+    throw e;
+  }
 }
 
 function setText(id, value) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
 }
-document.addEventListener('DOMContentLoaded', () => {
-    updateDate();
-    renderSummaryCards();
-    renderBars();
-    renderHighlights();
-    renderTable();
-    animateCharts();
-});
+
+function getStored(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+function saveStored(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.warn('Failed to save to localStorage', e.message);
+  }
+}
+
+// -----------------------------
+// Data Loading
+// -----------------------------
+async function loadAllData() {
+  try {
+    // Fetch de todos os dados das APIs
+    const [booksRes, usersRes, loansRes] = await Promise.all([
+      apiFetch(API_ENDPOINTS.books).catch(() => null),
+      apiFetch(API_ENDPOINTS.users).catch(() => null),
+      apiFetch(API_ENDPOINTS.loans).catch(() => null)
+    ]);
+
+    // Atualiza os dados globais
+    booksData = Array.isArray(booksRes) ? booksRes : getStored(BOOKS_KEY, []);
+    usersData = Array.isArray(usersRes) ? usersRes : getStored(USERS_KEY, []);
+    loansData = Array.isArray(loansRes) ? loansRes : getStored(LOANS_KEY, []);
+
+    // Salva no localStorage para cache
+    if (Array.isArray(booksData)) saveStored(BOOKS_KEY, booksData);
+    if (Array.isArray(usersData)) saveStored(USERS_KEY, usersData);
+    if (Array.isArray(loansData)) saveStored(LOANS_KEY, loansData);
+
+    console.log('✅ Dados carregados:', {
+      livros: booksData.length,
+      usuarios: usersData.length,
+      emprestimos: loansData.length
+    });
+
+    // Renderiza tudo
+    renderAll();
+  } catch (e) {
+    console.warn('Erro ao carregar dados, usando cache', e.message);
+    // Usa dados do cache
+    booksData = getStored(BOOKS_KEY, []);
+    usersData = getStored(USERS_KEY, []);
+    loansData = getStored(LOANS_KEY, []);
+    renderAll();
+  }
+}
+
+// -----------------------------
+// KPIs - Métricas do Dashboard
+// -----------------------------
+function renderSummaryCards() {
+  // 1. Livros no acervo (total de títulos/registros cadastrados)
+  const catalogCount = booksData.length;
+
+  // 2. Usuários cadastrados (todos, ativos ou não)
+  const usersCount = usersData.length;
+
+  // 3. Total de Livros em estoque (soma das quantidades/exemplares)
+  let totalExemplares = 0;
+  if (Array.isArray(booksData) && booksData.length > 0) {
+    totalExemplares = booksData.reduce((acc, book) => {
+      // Tenta várias propriedades comuns para quantidade
+      const qty = book.quantidade ?? 
+                  book.quantity ?? 
+                  book.exemplares ?? 
+                  book.estoque ?? 
+                  book.stock ?? 
+                  book.total ?? 
+                  book.copies ?? 
+                  1; // Se não tiver quantidade, assume 1
+      return acc + (typeof qty === 'number' ? qty : 1);
+    }, 0);
+  }
+
+  // 4. Empréstimos ativos (status = 'active' ou similar)
+  const activeLoans = loansData.filter(loan => {
+    const status = (loan.status || '').toLowerCase();
+    return status === 'active' || status === 'ativo' || status === 'em andamento';
+  }).length;
+
+  // 5. Empréstimos pendentes (outros status que não sejam ativos)
+  const pendingLoans = loansData.filter(loan => {
+    const status = (loan.status || '').toLowerCase();
+    return status === 'pending' || status === 'pendente';
+  }).length;
+
+  // Atualiza os elementos HTML
+  setText('metricCatalog', catalogCount.toLocaleString('pt-BR'));
+  setText('metricUsers', usersCount.toLocaleString('pt-BR'));
+  setText('metricTotalLivros', totalExemplares.toLocaleString('pt-BR'));
+  setText('metricActiveLoans', activeLoans.toLocaleString('pt-BR'));
+  setText('metricPending', pendingLoans.toLocaleString('pt-BR'));
+}
+
+// -----------------------------
+// Chart - Gráfico de Fluxo Semanal (ApexCharts)
+// -----------------------------
+async function loadWeeklyLoanChart() {
+  // Remove gráfico anterior se existir
+  if (weeklyChart) {
+    weeklyChart.destroy();
+    weeklyChart = null;
+  }
+
+  // Limpa o container
+  const container = document.querySelector("#weeklyBars");
+  if (!container) return;
+  container.innerHTML = "";
+
+  if (!Array.isArray(loansData) || loansData.length === 0) {
+    container.innerHTML = '<p style="text-align:center;padding:2rem;color:var(--text-muted);">Nenhum empréstimo encontrado</p>';
+    return;
+  }
+
+  // Função para extrair data de retirada
+  const getLoanDate = (loan) => 
+    loan.data_retirada || 
+    loan.date || 
+    loan.createdAt || 
+    loan.retirada || 
+    null;
+
+  // Função para extrair data de devolução
+  const getReturnDate = (loan) => 
+    loan.data_devolucao || 
+    loan.returnDate || 
+    loan.returnedAt || 
+    loan.devolucao ||
+    null;
+
+  // Contadores por dia da semana (Seg → Dom)
+  const weeklyLoans = {
+    Seg: 0,
+    Ter: 0,
+    Qua: 0,
+    Qui: 0,
+    Sex: 0,
+    Sáb: 0,
+    Dom: 0
+  };
+
+  const weeklyReturns = {
+    Seg: 0,
+    Ter: 0,
+    Qua: 0,
+    Qui: 0,
+    Sex: 0,
+    Sáb: 0,
+    Dom: 0
+  };
+
+  // Mapa de dia da semana (0 = Domingo, 1 = Segunda, etc.)
+  const dayMap = {
+    0: "Dom",
+    1: "Seg",
+    2: "Ter",
+    3: "Qua",
+    4: "Qui",
+    5: "Sex",
+    6: "Sáb"
+  };
+
+  loansData.forEach((loan) => {
+    // Contabiliza empréstimos
+    const loanDateStr = getLoanDate(loan);
+    if (loanDateStr) {
+      const loanDate = new Date(loanDateStr);
+      if (!isNaN(loanDate)) {
+        const dayName = dayMap[loanDate.getDay()];
+        if (weeklyLoans[dayName] !== undefined) {
+          weeklyLoans[dayName]++;
+        }
+      }
+    }
+
+    // Contabiliza devoluções
+    const returnDateStr = getReturnDate(loan);
+    if (returnDateStr) {
+      const returnDate = new Date(returnDateStr);
+      if (!isNaN(returnDate)) {
+        const dayName = dayMap[returnDate.getDay()];
+        if (weeklyReturns[dayName] !== undefined) {
+          weeklyReturns[dayName]++;
+        }
+      }
+    }
+  });
+
+  // Dados na ordem correta (Seg → Dom)
+  const loansData_chart = [
+    weeklyLoans.Seg,
+    weeklyLoans.Ter,
+    weeklyLoans.Qua,
+    weeklyLoans.Qui,
+    weeklyLoans.Sex,
+    weeklyLoans.Sáb,
+    weeklyLoans.Dom
+  ];
+
+  const returnsData_chart = [
+    weeklyReturns.Seg,
+    weeklyReturns.Ter,
+    weeklyReturns.Qua,
+    weeklyReturns.Qui,
+    weeklyReturns.Sex,
+    weeklyReturns.Sáb,
+    weeklyReturns.Dom
+  ];
+
+  // Pega as cores CSS do design system
+  const rootStyles = getComputedStyle(document.documentElement);
+  const primaryColor = rootStyles.getPropertyValue('--primary').trim() || '#be9b73';
+  const primaryColor600 = rootStyles.getPropertyValue('--primary-600').trim() || '#a4825e';
+  const secondaryColor = rootStyles.getPropertyValue('--secondary').trim() || '#432c22';
+  const textMuted = rootStyles.getPropertyValue('--text-muted').trim() || '#8c7b75';
+
+  // Configuração do ApexCharts com estilização premium e cores do design system
+  const options = {
+    series: [
+      { 
+        name: "Empréstimos", 
+        data: loansData_chart 
+      },
+      { 
+        name: "Devoluções", 
+        data: returnsData_chart 
+      }
+    ],
+    chart: {
+      type: "bar",
+      height: 280,
+      toolbar: { show: false },
+      fontFamily: 'Outfit, sans-serif',
+      animations: {
+        enabled: true,
+        easing: 'easeinout',
+        speed: 800,
+        animateGradually: {
+          enabled: true,
+          delay: 150
+        },
+        dynamicAnimation: {
+          enabled: true,
+          speed: 350
+        }
+      }
+    },
+    plotOptions: {
+      bar: {
+        borderRadius: 8,
+        borderRadiusApplication: 'end',
+        columnWidth: "65%",
+        distributed: false,
+        dataLabels: {
+          position: 'top'
+        }
+      }
+    },
+    colors: [primaryColor, 'rgba(67, 44, 34, 0.3)'],
+    fill: {
+      type: ['gradient', 'solid'],
+      gradient: {
+        shade: 'light',
+        type: "vertical",
+        shadeIntensity: 0.4,
+        gradientToColors: [primaryColor600, undefined],
+        inverseColors: false,
+        opacityFrom: 1,
+        opacityTo: 0.85,
+        stops: [0, 100]
+      }
+    },
+    dataLabels: { 
+      enabled: true,
+      formatter: function(val) {
+        return val > 0 ? val : '';
+      },
+      offsetY: -20,
+      style: {
+        fontSize: '11px',
+        colors: [secondaryColor],
+        fontWeight: 700
+      }
+    },
+    xaxis: {
+      categories: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
+      labels: {
+        style: {
+          colors: [textMuted, textMuted, textMuted, textMuted, textMuted, textMuted, textMuted],
+          fontSize: '13px',
+          fontWeight: 600
+        }
+      },
+      axisBorder: {
+        show: true,
+        color: 'rgba(67, 44, 34, 0.1)',
+        height: 1
+      },
+      axisTicks: {
+        show: false
+      }
+    },
+    yaxis: {
+      labels: {
+        style: {
+          colors: textMuted,
+          fontSize: '12px',
+          fontWeight: 600
+        },
+        formatter: function(val) {
+          return Math.floor(val);
+        }
+      }
+    },
+    grid: {
+      borderColor: 'rgba(67, 44, 34, 0.08)',
+      strokeDashArray: 4,
+      padding: {
+        top: 0,
+        right: 15,
+        bottom: 5,
+        left: 10
+      },
+      xaxis: {
+        lines: { show: false }
+      },
+      yaxis: {
+        lines: { show: true }
+      }
+    },
+    legend: {
+      show: true,
+      position: 'top',
+      horizontalAlign: 'right',
+      fontSize: '13px',
+      fontWeight: 600,
+      labels: {
+        colors: secondaryColor
+      },
+      markers: {
+        width: 10,
+        height: 10,
+        radius: 2
+      }
+    },
+    tooltip: {
+      enabled: true,
+      shared: true,
+      intersect: false,
+      theme: 'light',
+      style: {
+        fontSize: '13px',
+        fontFamily: 'Outfit, sans-serif'
+      },
+      y: {
+        formatter: function(val) {
+          if (val === undefined || val === null) return '0';
+          return val + (val === 1 ? " item" : " itens");
+        }
+      },
+      x: {
+        formatter: function(val) {
+          return val || '';
+        }
+      }
+    },
+    states: {
+      hover: {
+        filter: {
+          type: 'lighten',
+          value: 0.08
+        }
+      },
+      active: {
+        filter: {
+          type: 'darken',
+          value: 0.1
+        }
+      }
+    }
+  };
+
+  // Cria o gráfico
+  weeklyChart = new ApexCharts(container, options);
+  weeklyChart.render();
+}
+
+// -----------------------------
+// Renderização Principal
+// -----------------------------
+function renderAll() {
+  updateDate();
+  renderSummaryCards();
+  loadWeeklyLoanChart();
+  // NÃO MEXA: Funções que já estão funcionais
+  loadLoanHistory();
+  renderActivityList();
+  loadHighlightedLoans();
+}
 
 function updateDate() {
-    const date = new Date();
-    const options = { day: 'numeric', month: 'long' };
-    const el = document.getElementById('currentDate');
-    if (el) el.innerText = date.toLocaleDateString('pt-BR', options);
+  const date = new Date();
+  const options = { day: 'numeric', month: 'long' };
+  const el = document.getElementById('currentDate');
+  if (el) el.innerText = date.toLocaleDateString('pt-BR', options);
 }
 
-function renderSummaryCards() {
-    const active = loansData.filter(item => item.status === 'active').length;
-    const pending = loansData.filter(item => item.status !== 'active').length;
-    const catalogCount = getCatalogCount();
-    const usersCount = usersData.length || defaultUsers.length;
-    const online = Math.max(1, Math.round(usersCount * 0.08));
-
-    setText('metricCatalog', catalogCount.toLocaleString('pt-BR'));
-    setText('metricUsers', usersCount.toLocaleString('pt-BR'));
-    setText('metricOnline', online.toString());
-    setText('metricActiveLoans', active);
-    setText('metricPending', pending);
+// -----------------------------
+// ATIVIDADES RECENTES (NÃO MEXA - 100% FUNCIONAL)
+// -----------------------------
+function loadLoanHistory() {
+  const stored = localStorage.getItem(loanHistoryKey);
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      // Remove duplicados baseado em uma combinação única de campos
+      const uniqueHistory = [];
+      const seen = new Set();
+      
+      for (const item of parsed) {
+        // Cria uma chave única baseada nos dados do empréstimo
+        const key = `${item.usuario_id || item.usuario}-${item.livro_id || item.livro}-${item.acao}-${item.data_retirada}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueHistory.push(item);
+        }
+      }
+      
+      // SEMPRE limita para no máximo 4 itens
+      loanHistory = uniqueHistory.slice(0, 4);
+    } catch (e) {
+      console.error('Erro ao carregar histórico:', e);
+      loanHistory = [];
+    }
+  } else {
+    loanHistory = [];
+  }
 }
 
-function renderBars() {
-    const container = document.getElementById('weeklyBars');
-    if (!container) return;
+async function renderActivityList() {
+  const list = document.getElementById("activityList");
+  if (!list) return;
+  list.innerHTML = "";
 
-    const maxVal = Math.max(...weeklyFlow.map(d => Math.max(d.loans, d.returns)));
-    container.innerHTML = '';
+  // Força o limite máximo de 4 itens (não pode passar disso para manter a responsividade)
+  const MAX_ACTIVITIES = 4;
+  const items = Array.isArray(loanHistory) ? loanHistory.slice(0, MAX_ACTIVITIES) : [];
 
-    weeklyFlow.forEach(item => {
-        const loansHeight = Math.round((item.loans / maxVal) * 100);
-        const returnsHeight = Math.round((item.returns / maxVal) * 100);
+  if (!items.length || items.length === 0) {
+    list.innerHTML = "<li class='empty'>Nenhuma atividade registrada.</li>";
+    return;
+  }
 
-        const col = document.createElement('div');
-        col.className = 'bar-col';
-        col.innerHTML = `
-            <div class="bar-group">
-                <span class="bar loans" style="height:${loansHeight}%;" aria-label="Empréstimos ${item.day}"></span>
-                <span class="bar returns" style="height:${returnsHeight}%;" aria-label="Devoluções ${item.day}"></span>
-            </div>
-            <span class="bar-label">${item.day}</span>
-        `;
-        container.appendChild(col);
+  try {
+    const users = await fetch("http://localhost:3000/usuarios").then(r => r.json()).catch(() => []);
+    const books = await fetch("http://localhost:3000/livros").then(r => r.json()).catch(() => []);
+
+    items.forEach(item => {
+      const user = users.find(u => u.id === item.usuario_id);
+      const book = books.find(b => b.id === item.livro_id);
+
+      const usuarioNome = user ? user.nome : item.usuario || "—";
+      const livroNome = book ? book.titulo : item.livro || "—";
+
+      const data = item.data_retirada ? new Date(item.data_retirada) : new Date();
+      const dataBR = data.toLocaleDateString("pt-BR");
+
+      const statusTraduzido = {
+        created: "Criado",
+        updated: "Atualizado",
+        deleted: "Deletado",
+        active: "Ativo"
+      }[item.acao] || item.acao;
+
+      const li = document.createElement("li");
+      li.classList.add("mini-item");
+
+      li.innerHTML = `
+        <div class="mini-icon"><i class="ph ph-lightning"></i></div>
+        <div class="mini-info">
+          <strong>${usuarioNome} — ${livroNome}</strong>
+          <span>${statusTraduzido} • ${dataBR}</span>
+          ${item.detalhes ? `<p class="details">${item.detalhes}</p>` : ""}
+        </div>
+      `;
+
+      list.appendChild(li);
     });
+  } catch (error) {
+    console.error('Erro ao renderizar atividades:', error);
+    list.innerHTML = "<li class='empty'>Erro ao carregar atividades.</li>";
+  }
 }
 
-function renderHighlights() {
-    const list = document.getElementById('activityList');
-    if (!list) return;
-    list.innerHTML = '';
+// -----------------------------
+// EMPRÉSTIMOS EM DESTAQUE (NÃO MEXA - 100% FUNCIONAL)
+// -----------------------------
+function escapeHtml(str) {
+  if (str == null) return '';
+  return String(str)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
 
-    activityFeed.forEach(item => {
-        const li = document.createElement('li');
-        li.className = 'mini-item';
-        li.innerHTML = `
-            <div class="dot ${item.type}"></div>
-            <div>
-                <strong>${item.title}</strong>
-                <p>${item.desc}</p>
-            </div>
-            <span class="time">${item.time}</span>
-        `;
-        list.appendChild(li);
+function normalizeUserObject(u) {
+  if (!u) return null;
+  return {
+    id: u.id ?? u._id ?? u.userId ?? u.usuarioId ?? u.usuario_id ?? u.user_id ?? null,
+    name: u.name ?? u.fullName ?? u.nome ?? u.usuario ?? u.username ?? u.email ?? null,
+    email: u.email ?? null
+  };
+}
+
+function normalizeBookObject(b) {
+  if (!b) return null;
+  return {
+    id: b.id ?? b._id ?? b.bookId ?? b.livroId ?? b.livro_id ?? b.book_id ?? null,
+    title: b.title ?? b.name ?? b.titulo ?? b.nome ?? b.label ?? null
+  };
+}
+
+function findUserByCandidate(users, candidate) {
+  if (!users || !candidate) return null;
+
+  if (typeof candidate === 'object') {
+    const nid = candidate.id ?? candidate._id ?? candidate.userId ?? candidate.usuarioId ?? candidate.usuario_id;
+    if (nid != null) {
+      const u = users.find(x => String(x.id) === String(nid) || String(x._id) === String(nid));
+      if (u) return normalizeUserObject(u);
+    }
+    const name = candidate.name ?? candidate.nome ?? candidate.usuario ?? candidate.email;
+    if (name) {
+      const u = users.find(x => (x.name && x.name === name) || (x.nome && x.nome === name) || (x.email && x.email === name));
+      if (u) return normalizeUserObject(u);
+    }
+  }
+
+  if (!isNaN(Number(candidate))) {
+    const u = users.find(x => String(x.id) === String(candidate) || String(x._id) === String(candidate));
+    if (u) return normalizeUserObject(u);
+  }
+
+  if (typeof candidate === 'string') {
+    const byExact = users.find(x => (x.name && x.name === candidate) || (x.nome && x.nome === candidate) || (x.email && x.email === candidate));
+    if (byExact) return normalizeUserObject(byExact);
+
+    const lower = candidate.toLowerCase();
+    const byPartial = users.find(x =>
+      (x.name && x.name.toLowerCase().includes(lower)) ||
+      (x.nome && x.nome.toLowerCase().includes(lower)) ||
+      (x.email && x.email.toLowerCase().includes(lower))
+    );
+    if (byPartial) return normalizeUserObject(byPartial);
+  }
+
+  return null;
+}
+
+function findBookByCandidate(books, candidate) {
+  if (!books || !candidate) return null;
+
+  if (typeof candidate === 'object') {
+    const nid = candidate.id ?? candidate._id ?? candidate.bookId ?? candidate.livroId ?? candidate.livro_id ?? candidate.book_id;
+    if (nid != null) {
+      const b = books.find(x => String(x.id) === String(nid) || String(x._id) === String(nid));
+      if (b) return normalizeBookObject(b);
+    }
+    const title = candidate.title ?? candidate.titulo ?? candidate.name ?? candidate.nome;
+    if (title) {
+      const b = books.find(x => (x.title && x.title === title) || (x.titulo && x.titulo === title) || (x.name && x.name === title));
+      if (b) return normalizeBookObject(b);
+    }
+  }
+
+  if (!isNaN(Number(candidate))) {
+    const b = books.find(x => String(x.id) === String(candidate) || String(x._id) === String(candidate));
+    if (b) return normalizeBookObject(b);
+  }
+
+  if (typeof candidate === 'string') {
+    const byExact = books.find(x => (x.title && x.title === candidate) || (x.titulo && x.titulo === candidate) || (x.name && x.name === candidate));
+    if (byExact) return normalizeBookObject(byExact);
+
+    const lower = candidate.toLowerCase();
+    const byPartial = books.find(x =>
+      (x.title && x.title.toLowerCase().includes(lower)) ||
+      (x.titulo && x.titulo.toLowerCase().includes(lower)) ||
+      (x.name && x.name.toLowerCase().includes(lower))
+    );
+    if (byPartial) return normalizeBookObject(byPartial);
+  }
+
+  return null;
+}
+
+function mapStatusToPt(status) {
+  if (!status) return '—';
+  const s = String(status).toLowerCase();
+  return {
+    created: 'Criado',
+    updated: 'Atualizado',
+    deleted: 'Removido',
+    active: 'Ativo',
+    pending: 'Pendente',
+    returned: 'Devolvido',
+    returned_at: 'Devolvido',
+    late: 'Atrasado',
+    canceled: 'Cancelado',
+    done: 'Concluído'
+  }[s] || (s.charAt(0).toUpperCase() + s.slice(1));
+}
+
+async function loadHighlightedLoans() {
+  try {
+    const [loansResp, usersResp, booksResp] = await Promise.all([
+      fetch('http://localhost:3000/emprestimos'),
+      fetch('http://localhost:3000/usuarios'),
+      fetch('http://localhost:3000/livros')
+    ]);
+
+    if (!loansResp.ok || !usersResp.ok || !booksResp.ok) {
+      throw new Error('Um dos endpoints retornou erro');
+    }
+
+    const [loans, users, books] = await Promise.all([
+      loansResp.json(),
+      usersResp.json(),
+      booksResp.json()
+    ]);
+
+    const TBody = document.getElementById('loansTableBody');
+    if (!TBody) return;
+    TBody.innerHTML = '';
+
+    if (!Array.isArray(loans) || loans.length === 0) {
+      TBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Nenhum empréstimo encontrado.</td></tr>`;
+      return;
+    }
+
+    const usersArr = Array.isArray(users) ? users : [];
+    const booksArr = Array.isArray(books) ? books : [];
+
+    // Ordena por data mais recente
+    const loansSorted = [...loans].sort((a, b) => {
+      const aDate = Date.parse(a.data_retirada || a.date || a.createdAt || '') || 0;
+      const bDate = Date.parse(b.data_retirada || b.date || b.createdAt || '') || 0;
+      return bDate - aDate;
     });
 
-    const goal = 72;
-    const goalBar = document.getElementById('goalBar');
-    const goalValue = document.getElementById('goalValue');
-    if (goalBar) goalBar.style.width = `${goal}%`;
-    if (goalValue) goalValue.textContent = `${goal}%`;
-}
+    // Pega os 3 mais recentes
+    const top = loansSorted.slice(0, 3);
 
-function renderTable() {
-    const tbody = document.getElementById('loansTableBody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
+    top.forEach(l => {
+      const userCandidate = l.user ?? l.usuario ?? l.usuario_id ?? l.user_id ?? l.userId ?? l.usuarioId;
+      const bookCandidate = l.book ?? l.livro ?? l.livro_id ?? l.book_id ?? l.bookId ?? l.livroId;
 
-    loansData.forEach((item, index) => {
-        const statusLabels = {
-            active: 'Em Dia',
-            late: 'Atrasado',
-            pending: 'Pendente'
-        };
+      const foundUser = findUserByCandidate(usersArr, userCandidate) ||
+                        findUserByCandidate(usersArr, l.usuario_id ?? l.userId ?? l.user_id) ||
+                        null;
 
-        const cover = item.cover || resolveCover(item.book, index);
-        const avatar = item.avatar || resolveAvatar(index);
+      const foundBook = findBookByCandidate(booksArr, bookCandidate) ||
+                        findBookByCandidate(booksArr, l.livro_id ?? l.bookId ?? l.book_id) ||
+                        null;
 
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>
-                <div class="book-info">
-                    <img src="${cover}" alt="${item.book}"
-                         onerror="this.onerror=null;this.src='${fallbackCover}'">
-                    <span>${item.book}</span>
-                </div>
-            </td>
-            <td>
-                <div class="user-info">
-                    <img src="${avatar}" alt="${item.user}"
-                         onerror="this.onerror=null;this.src='${fallbackAvatar}'">
-                    <span>${item.user}</span>
-                </div>
-            </td>
-            <td>${item.date}</td>
-            <td style="color:var(--text-muted)">${item.deadline}</td>
-            <td>
-                <span class="status-badge ${item.status}">
-                    ${statusLabels[item.status] || item.status}
-                </span>
-            </td>
-            <td style="text-align:right;">
-                <button class="btn-text" title="Ações rápidas">
-                    <i class="ph-bold ph-dots-three"></i>
-                </button>
-            </td>
-        `;
-        tbody.appendChild(row);
+      const userName = foundUser?.name || (typeof l.user === 'string' ? l.user : (l.usuario || l.userName)) || '—';
+      const bookTitle = foundBook?.title || (typeof l.book === 'string' ? l.book : (l.livro || l.bookTitle || l.titulo)) || '—';
+
+      const retirada = l.data_retirada || l.date || l.createdAt || l.retirada || null;
+      const devolucao = l.data_devolucao || l.deadline || l.dueDate || l.devolucao || null;
+
+      const retiradaFmt = retirada ? new Date(retirada).toLocaleDateString('pt-BR') : '–';
+      const devolucaoFmt = devolucao ? new Date(devolucao).toLocaleDateString('pt-BR') : '–';
+
+      const statusLabel = mapStatusToPt(l.status ?? l.acao ?? l.state);
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(bookTitle)}</td>
+        <td>${escapeHtml(userName)}</td>
+        <td>${escapeHtml(retiradaFmt)}</td>
+        <td style="color:var(--text-muted)">${escapeHtml(devolucaoFmt)}</td>
+        <td><span class="status-badge ${escapeHtml(String(l.status ?? '').toLowerCase())}">${escapeHtml(statusLabel)}</span></td>
+      `;
+      TBody.appendChild(tr);
     });
+
+  } catch (err) {
+    console.error('Erro ao carregar empréstimos em destaque:', err);
+    const TBody = document.getElementById('loansTableBody');
+    if (TBody) {
+      TBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Erro ao carregar dados.</td></tr>';
+    }
+  }
 }
 
-function animateCharts() {
-    setTimeout(() => {
-        document.querySelectorAll('.bar').forEach(bar => {
-            const target = bar.style.height;
-            bar.style.height = '0px';
-            requestAnimationFrame(() => {
-                bar.style.height = target;
-            });
-        });
-    }, 130);
-}
+// -----------------------------
+// API Pública (para reload manual)
+// -----------------------------
+window.DashboardAPI = {
+  reload: () => loadAllData(),
+  getState: () => ({ loansData, usersData, booksData })
+};
+
+// -----------------------------
+// Inicialização
+// -----------------------------
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('🚀 Dashboard inicializado');
+
+  // Carrega dados do cache primeiro (render rápido)
+  loansData = getStored(LOANS_KEY, []);
+  usersData = getStored(USERS_KEY, []);
+  booksData = getStored(BOOKS_KEY, []);
+
+  renderAll();
+
+  // Depois busca dados atualizados da API
+  loadAllData().catch(err => console.warn('Initial loadAllData failed', err.message));
+
+  // Auto-reload a cada 2 minutos
+  setInterval(() => loadAllData().catch(() => {}), 120000);
+});
