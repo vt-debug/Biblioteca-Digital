@@ -299,6 +299,11 @@ function logLoanAction(oldData, newData, acao) {
     data_retirada: new Date()
   });
 
+  // IMPORTANTE: Limita para no máximo 4 atividades
+  if (loanHistory.length > 4) {
+    loanHistory.length = 4;
+  }
+
   saveLoanHistory(); // salva no localStorage
   updateLoanTimeline();
 }

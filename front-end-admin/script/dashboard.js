@@ -242,30 +242,14 @@ async function loadWeeklyLoanChart() {
       }
     }
 
-    // Contabiliza devoluções SOMENTE se realmente foi devolvido
-    const status = (loan.status || '').toLowerCase();
-    const isReturned = status === 'returned' || status === 'devolvido' || status === 'concluído' || status === 'done';
-    
-    if (isReturned) {
-      const returnDateStr = getReturnDate(loan);
-      if (returnDateStr) {
-        const returnDate = new Date(returnDateStr);
-        if (!isNaN(returnDate)) {
-          const dayName = dayMap[returnDate.getDay()];
-          if (weeklyReturns[dayName] !== undefined) {
-            weeklyReturns[dayName]++;
-          }
-        }
-      } else {
-        // Fallback: se foi devolvido mas não tem data de devolução, usa data de retirada
-        if (loanDateStr) {
-          const loanDate = new Date(loanDateStr);
-          if (!isNaN(loanDate)) {
-            const dayName = dayMap[loanDate.getDay()];
-            if (weeklyReturns[dayName] !== undefined) {
-              weeklyReturns[dayName]++;
-            }
-          }
+    // Contabiliza devoluções
+    const returnDateStr = getReturnDate(loan);
+    if (returnDateStr) {
+      const returnDate = new Date(returnDateStr);
+      if (!isNaN(returnDate)) {
+        const dayName = dayMap[returnDate.getDay()];
+        if (weeklyReturns[dayName] !== undefined) {
+          weeklyReturns[dayName]++;
         }
       }
     }
@@ -414,7 +398,19 @@ async function loadWeeklyLoanChart() {
       }
     },
     legend: {
-      show: false  // Removida a legenda duplicada
+      show: true,
+      position: 'top',
+      horizontalAlign: 'right',
+      fontSize: '13px',
+      fontWeight: 600,
+      labels: {
+        colors: secondaryColor
+      },
+      markers: {
+        width: 10,
+        height: 10,
+        radius: 2
+      }
     },
     tooltip: {
       enabled: true,
@@ -483,7 +479,31 @@ function updateDate() {
 // -----------------------------
 function loadLoanHistory() {
   const stored = localStorage.getItem(loanHistoryKey);
-  loanHistory = stored ? JSON.parse(stored) : [];
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      // Remove duplicados baseado em uma combinação única de campos
+      const uniqueHistory = [];
+      const seen = new Set();
+      
+      for (const item of parsed) {
+        // Cria uma chave única baseada nos dados do empréstimo
+        const key = `${item.usuario_id || item.usuario}-${item.livro_id || item.livro}-${item.acao}-${item.data_retirada}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueHistory.push(item);
+        }
+      }
+      
+      // SEMPRE limita para no máximo 4 itens
+      loanHistory = uniqueHistory.slice(0, 4);
+    } catch (e) {
+      console.error('Erro ao carregar histórico:', e);
+      loanHistory = [];
+    }
+  } else {
+    loanHistory = [];
+  }
 }
 
 async function renderActivityList() {

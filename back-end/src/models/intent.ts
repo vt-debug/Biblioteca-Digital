@@ -9,11 +9,14 @@ const model = client.getGenerativeModel({ model: MODEL_NAME });
 
 export type IntentName =
     | "COUNT_BOOKS"
+    | "COUNT_WEEKLY_LOANS"
+    | "BOOKS_TOTAL"
     | "LIST_BOOKS"
     | "LIST_AVAILABLE_BOOKS"
     | "COUNT_USERS"
     | "COUNT_ACTIVE_LOANS"
     | "NAVIGATE"
+    | "ESTOQUE_LIVROS_TOTAL"
     | "SMALLTALK"
     | "UNKNOWN";
 
@@ -149,6 +152,17 @@ export async function handleIntent(intent: IntentResult) {
                 return {
                     type: "ok",
                     text: `Temos atualmente **${count ?? 0} usuários** cadastrados.`
+                };
+            }
+
+            case "ESTOQUE_LIVROS_TOTAL": {
+                const { count } = await supabase
+                    .from("livros")
+                    .select("estoque", { count: "exact", head: true });
+
+                return {
+                    type: "ok",
+                    text: `Temos atualmente **${count ?? 0} livros** em estoque.`
                 };
             }
 

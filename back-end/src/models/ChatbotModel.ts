@@ -115,6 +115,11 @@ function generateFollowUp(intentName: string | undefined): string {
             "Quer que eu te lembre de olhar os atrasados depois?",
             "Se quiser, posso te ajudar a pensar em estratégias para reduzir atrasos.",
         ],
+
+        ESTOQUE_LIVROS_TOTAL: [
+            "Se quiser, posso te ajudar a pensar em estratégias para reduzir atrasos.",
+        ],
+        
         NAVIGATE: [
             "Se alguma tela estiver confusa, me conta que eu te ajudo a pensar melhorias.",
             "Se quiser, posso sugerir um fluxo pra agilizar seu dia a dia no painel.",
